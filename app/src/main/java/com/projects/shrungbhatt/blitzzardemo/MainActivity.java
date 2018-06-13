@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
         mWikitudeSDK.onCreate(getApplicationContext(), this, startupConfiguration);
 
-        mTargetCollectionResource = mWikitudeSDK.getTrackerManager().createTargetCollectionResource("file:///android_asset/firetruck_map.wmc", new TargetCollectionResourceLoadingCallback() {
+        mTargetCollectionResource = mWikitudeSDK.getTrackerManager().createTargetCollectionResource("file:///android_asset/jeep_target.wto", new TargetCollectionResourceLoadingCallback() {
             @Override
             public void onError(int errorCode, String errorMessage) {
                 Log.v(TAG, "Failed to load target collection resource. Reason: " + errorMessage);
