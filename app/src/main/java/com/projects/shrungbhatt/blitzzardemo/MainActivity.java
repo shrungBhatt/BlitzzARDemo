@@ -1,6 +1,5 @@
 package com.projects.shrungbhatt.blitzzardemo;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -15,7 +14,13 @@ import com.wikitude.tracker.ObjectTrackerListener;
 import com.wikitude.tracker.TargetCollectionResource;
 import com.wikitude.tracker.TargetCollectionResourceLoadingCallback;
 
-public class MainActivity extends AppCompatActivity implements ObjectTrackerListener, ExternalRendering {
+import min3d.core.Object3dContainer;
+import min3d.core.RendererActivity;
+import min3d.parser.IParser;
+import min3d.parser.Parser;
+import min3d.vos.Light;
+
+public class MainActivity extends RendererActivity implements ObjectTrackerListener, ExternalRendering {
 
     public static final String TAG ="MainActivity";
 
@@ -26,10 +31,13 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
     private TargetCollectionResource mTargetCollectionResource;
     private DropDownAlert mDropDownAlert;
+    private Object3dContainer faceObject3D;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         mWikitudeSDK = new WikitudeSDK(this);
         NativeStartupConfiguration startupConfiguration = new NativeStartupConfiguration();
@@ -56,6 +64,25 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         mDropDownAlert.setTextWeight(1);
         mDropDownAlert.show();
     }
+
+    @Override
+    public void initScene() {
+        super.initScene();
+
+        scene.lights().add(new Light());
+        scene.lights().add(new Light());
+        Light myLight = new Light();
+        myLight.position.setZ(150);
+        scene.lights().add(myLight);
+        IParser myParser = Parser.createParser(Parser.Type.OBJ, getResources(), "com.projects.shrungbhatt.blitzzardemo:raw/camaro_obj",true);
+        myParser.parse();
+        faceObject3D = myParser.getParsedObject();
+        faceObject3D.position().x = faceObject3D.position().y = faceObject3D.position().z = 0;
+        scene.addChild(faceObject3D);
+
+    }
+
+
 
     @Override
     protected void onResume() {
