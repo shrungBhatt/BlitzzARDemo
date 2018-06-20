@@ -245,7 +245,7 @@ public class Scene implements IObject3dContainer, IDirtyParent
 	/**
 	 * Used by Renderer 
 	 */
-	void init() /*package-private*/ 
+	public void init() /*package-private*/
 	{
 		Log.i(Min3d.TAG, "Scene.init()");
 		
@@ -264,12 +264,12 @@ public class Scene implements IObject3dContainer, IDirtyParent
 	/**
 	 * Used by Renderer 
 	 */
-	ArrayList<Object3d> children() /*package-private*/ 
+	public ArrayList<Object3d> children() /*package-private*/
 	{
 		return _children;
 	}
 	
-	private void clearChildren(IObject3dContainer $c)
+	public void clearChildren(IObject3dContainer $c)
 	{
 		for (int i = $c.numChildren() - 1; i >= 0; i--)
 		{

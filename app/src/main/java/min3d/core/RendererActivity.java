@@ -7,6 +7,8 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.projects.shrungbhatt.blitzzardemo.GLRenderer;
+
 /**
  * Extend this class when creating your min3d-based Activity. 
  * Then, override initScene() and updateScene() for your main
@@ -43,29 +45,18 @@ public class RendererActivity extends Activity implements ISceneController
     };
     
 
-    @Override
-	protected void onCreate(Bundle savedInstanceState) 
-	{
-		super.onCreate(savedInstanceState);
 
-		_initSceneHander = new Handler();
-		_updateSceneHander = new Handler();
-		
-		//
-		// These 4 lines are important.
-		//
-		Shared.context(this);
-		scene = new Scene(this);
-		Renderer r = new Renderer(scene);
-		Shared.renderer(r);
-		
-		_glSurfaceView = new GLSurfaceView(this);
-        glSurfaceViewConfig();
-		_glSurfaceView.setRenderer(r);
-		_glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-		
-        onCreateSetContentView();
-	}
+	public void init(GLRenderer glRenderer,GLSurfaceView _glSurfaceView){
+        _initSceneHander = new Handler();
+        _updateSceneHander = new Handler();
+
+        //
+        // These 4 lines are important.
+        //
+        Shared.renderer(glRenderer);
+
+        onCreateSetContentView(_glSurfaceView);
+    }
     
     /**
      * Any GlSurfaceView settings that needs to be executed before 
@@ -90,7 +81,7 @@ public class RendererActivity extends Activity implements ISceneController
 	/**
 	 * Separated out for easier overriding...
 	 */
-	protected void onCreateSetContentView()
+	protected void onCreateSetContentView(GLSurfaceView _glSurfaceView)
 	{
 		setContentView(_glSurfaceView);
 	}

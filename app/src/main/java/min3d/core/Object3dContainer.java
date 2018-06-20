@@ -102,7 +102,7 @@ public class Object3dContainer extends Object3d implements IObject3dContainer
 	}
 	
 	/*package-private*/ 
-	ArrayList<Object3d> children()
+	public ArrayList<Object3d> children()
 	{
 		return _children;
 	}

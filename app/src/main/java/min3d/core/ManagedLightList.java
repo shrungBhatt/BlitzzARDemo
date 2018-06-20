@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import android.util.Log;
 
+import com.projects.shrungbhatt.blitzzardemo.GLRenderer;
+
 import min3d.Min3d;
 import min3d.vos.Light;
 
@@ -39,15 +41,15 @@ public class ManagedLightList
 		Log.i(Min3d.TAG, "ManagedLightList.reset()");
 
 		_availGlIndices = new ArrayList<Integer>();
-		for (int i = 0; i < Renderer.NUM_GLLIGHTS; i++) {
+		for (int i = 0; i < GLRenderer.NUM_GLLIGHTS; i++) {
 			_availGlIndices.add(i);
 		}
 
 		_lightToGlIndex = new HashMap<Light, Integer>();
 
-		_glIndexEnabled = new boolean[Renderer.NUM_GLLIGHTS];
-		_glIndexEnabledDirty = new boolean[Renderer.NUM_GLLIGHTS];
-		for (int i = 0; i < Renderer.NUM_GLLIGHTS; i++) {
+		_glIndexEnabled = new boolean[GLRenderer.NUM_GLLIGHTS];
+		_glIndexEnabledDirty = new boolean[GLRenderer.NUM_GLLIGHTS];
+		for (int i = 0; i < GLRenderer.NUM_GLLIGHTS; i++) {
 			_glIndexEnabled[i] = false;
 			_glIndexEnabledDirty[i] = true;
 		}
@@ -61,7 +63,7 @@ public class ManagedLightList
 			return false;
 		}
 
-		if (_lights.size() > Renderer.NUM_GLLIGHTS)
+		if (_lights.size() > GLRenderer.NUM_GLLIGHTS)
 			throw new Error("Exceeded maximum number of Lights");
 
 		boolean result = _lights.add($light);
@@ -110,17 +112,17 @@ public class ManagedLightList
 	}
 
 	/**
-	 * Used by Renderer
+	 * Used by GLRenderer
 	 */
-	int getGlIndexByLight(Light $light) /* package-private */
+	public int getGlIndexByLight(Light $light) /* package-private */
 	{
 		return _lightToGlIndex.get($light);
 	}
 
 	/**
-	 * Used by Renderer
+	 * Used by GLRenderer
 	 */
-	Light getLightByGlIndex(int $glIndex) /* package-private */
+	public Light getLightByGlIndex(int $glIndex) /* package-private */
 	{
 		for (int i = 0; i < _lights.size(); i++) 
 		{
@@ -132,17 +134,17 @@ public class ManagedLightList
 	}
 
 	/**
-	 * Used by Renderer
+	 * Used by GLRenderer
 	 */
-	boolean[] glIndexEnabledDirty() /* package-private */
+	public boolean[] glIndexEnabledDirty() /* package-private */
 	{
 		return _glIndexEnabledDirty;
 	}
 
 	/**
-	 * Used by Renderer
+	 * Used by GLRenderer
 	 */
-	boolean[] glIndexEnabled() /* package-private */
+	public boolean[] glIndexEnabled() /* package-private */
 	{
 		return _glIndexEnabled;
 	}

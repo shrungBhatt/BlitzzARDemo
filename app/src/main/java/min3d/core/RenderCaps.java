@@ -94,7 +94,7 @@ public class RenderCaps
 	/**
 	 * Called by Renderer.onSurfaceCreate() 
 	 */
-	static void setRenderCaps(GL10 $gl) /* package-private*/
+	public static void setRenderCaps(GL10 $gl) /* package-private*/
 	{
 	    IntBuffer i;
 

@@ -1,8 +1,9 @@
 package min3d;
 
 import min3d.core.TextureManager;
-import min3d.core.Renderer;
 import android.content.Context;
+
+import com.projects.shrungbhatt.blitzzardemo.GLRenderer;
 
 /**
  * Holds static references to TextureManager, Renderer, and the application Context. 
@@ -10,7 +11,7 @@ import android.content.Context;
 public class Shared 
 {
 	private static Context _context;
-	private static Renderer _renderer;
+	private static GLRenderer _renderer;
 	private static TextureManager _textureManager;
 
 	
@@ -23,11 +24,11 @@ public class Shared
 		_context = $c;
 	}
 
-	public static Renderer renderer()
+	public static GLRenderer renderer()
 	{
 		return _renderer;
 	}
-	public static void renderer(Renderer $r)
+	public static void renderer(GLRenderer $r)
 	{
 		_renderer = $r;
 	}

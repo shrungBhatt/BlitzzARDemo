@@ -146,7 +146,7 @@ public class Vertices
 		_normals.overwrite($newNormals);
 	}
 	
-	Number3dBufferList points() /*package-private*/
+	public Number3dBufferList points() /*package-private*/
 	{
 		return _points;
 	}
@@ -154,7 +154,7 @@ public class Vertices
 	/**
 	 * List of texture coordinates
 	 */
-	UvBufferList uvs() /*package-private*/
+	public UvBufferList uvs() /*package-private*/
 	{
 		return _uvs;
 	}
@@ -162,7 +162,7 @@ public class Vertices
 	/**
 	 * List of normal values 
 	 */
-	Number3dBufferList normals() /*package-private*/
+	public Number3dBufferList normals() /*package-private*/
 	{
 		return _normals;
 	}
@@ -170,7 +170,7 @@ public class Vertices
 	/**
 	 * List of color values
 	 */
-	Color4BufferList colors() /*package-private*/
+	public Color4BufferList colors() /*package-private*/
 	{
 		return _colors;
 	}
