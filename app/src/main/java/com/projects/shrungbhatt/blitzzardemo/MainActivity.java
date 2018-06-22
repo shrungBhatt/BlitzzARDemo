@@ -1,6 +1,8 @@
 package com.projects.shrungbhatt.blitzzardemo;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -36,11 +38,17 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
     private DropDownAlert mDropDownAlert;
     private Object3dContainer faceObject3D;
 
+    private Vibrator mVibrator;
+    private int mCount = 0;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+        mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         mWikitudeSDK = new WikitudeSDK(this);
         NativeStartupConfiguration startupConfiguration = new NativeStartupConfiguration();
@@ -197,11 +205,20 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
             engine.setYScale(target.getTargetScale().y);
             engine.setZScale(target.getTargetScale().z);
         }
+
+        if(mCount==0) {
+            AudioUtils.getInstance(this, R.raw.splash_sound).playBookServiceSound();
+            mVibrator.vibrate(700);
+            mCount--;
+        }
+
+
     }
 
     @Override
     public void onObjectLost(ObjectTracker tracker, final ObjectTarget target) {
         Log.v(TAG, "Lost target " + target.getName());
         mGLRenderer.removeRenderablesForKey(target.getName());
+        mCount = 0;
     }
 }

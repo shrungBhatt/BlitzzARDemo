@@ -33,7 +33,7 @@ public class Engine extends Renderable {
             "uniform mat4 u_translation;" +
             "void main()" +
             "{" +
-            "  gl_Position = u_projection * u_modelView * u_translation * u_scale * v_position;" +
+            "  gl_Position = u_projection * u_modelView * u_translation * v_position;" +
             "v_texCoordinate = a_texCoordinate;" +
             "}";
 
@@ -93,6 +93,9 @@ public class Engine extends Renderable {
         mContext = context;
 
 
+        mTextureHandle = loadTexture(mContext, R.drawable.generator);
+
+
 
         mEngineTextureCoordinates = ByteBuffer.allocateDirect(mEngineTextureVertices.length * 4).
                 order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -136,7 +139,6 @@ public class Engine extends Renderable {
             return;
         }
 
-        mTextureHandle = loadTexture(mContext, R.drawable.generator);
 
 
         GLES20.glUseProgram(mAugmentationProgram);
@@ -152,6 +154,8 @@ public class Engine extends Renderable {
         //Set the color handle
         GLES20.glUniform4fv(mColorHandle, 1, mColor, 0);
 
+        mTextureCoordinate = GLES20.glGetUniformLocation(mAugmentationProgram,"a_texCoordinate");
+        mTextureUniformHandle = GLES20.glGetUniformLocation(mAugmentationProgram,"u_texture");
         //Set the active texture unit to texture unit 0.
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
@@ -184,19 +188,15 @@ public class Engine extends Renderable {
                 mXTranslate,        mYTranslate,        mZTranslate,        1.0f
         };
 
-        GLES20.glUniformMatrix4fv(mScaleMatrixUniform, 1, false, scaleMatrix, 0);
+//        GLES20.glUniformMatrix4fv(mScaleMatrixUniform, 1, false, scaleMatrix, 0);
         GLES20.glUniformMatrix4fv(mTranslateMatrixUniform, 1, false, translateMatrix, 0);
-
-//        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-//        GLES20.glDepthMask(true);
-//        GLES20.glColorMask(false, false, false, false);
 
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glBlendFunc(GLES20.GL_SRC_COLOR,GLES20.GL_DST_ALPHA);
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, mEngineIndiceDrawOrder.length,
                 GLES20.GL_UNSIGNED_SHORT, mEngineIndiceBuffer);
 
-//        GLES20.glColorMask(true, true, true, true);
+        GLES20.glDisableVertexAttribArray(mPositionSlot);
 
     }
 
@@ -254,11 +254,13 @@ public class Engine extends Renderable {
         mPositionSlot = GLES20.glGetAttribLocation(mAugmentationProgram, "v_position");
         mModelViewUniform = GLES20.glGetUniformLocation(mAugmentationProgram, "u_modelView");
         mProjectionUniform = GLES20.glGetUniformLocation(mAugmentationProgram, "u_projection");
-        mScaleMatrixUniform = GLES20.glGetUniformLocation(mAugmentationProgram, "u_scale");
+//        mScaleMatrixUniform = GLES20.glGetUniformLocation(mAugmentationProgram, "u_scale");
         mTranslateMatrixUniform = GLES20.glGetUniformLocation(mAugmentationProgram, "u_translation");
-        mTextureCoordinate = GLES20.glGetUniformLocation(mAugmentationProgram,"a_texCoordinate");
-        mTextureUniformHandle = GLES20.glGetUniformLocation(mAugmentationProgram,"u_texture");
+
         mColorHandle = GLES20.glGetUniformLocation(mAugmentationProgram,"v_color");
+
+        mTextureHandle = loadTexture(mContext, R.drawable.generator);
+
 
     }
 
