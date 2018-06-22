@@ -255,7 +255,7 @@ public class Scene implements IObject3dContainer, IDirtyParent
 		_sceneController.getInitSceneHandler().post(_sceneController.getInitSceneRunnable());
 	}
 	
-	void update()
+	public void update()
 	{
 		_sceneController.updateScene();
 		_sceneController.getUpdateSceneHandler().post(_sceneController.getUpdateSceneRunnable());

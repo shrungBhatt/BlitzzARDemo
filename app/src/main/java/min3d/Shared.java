@@ -1,5 +1,6 @@
 package min3d;
 
+import min3d.core.Renderer;
 import min3d.core.TextureManager;
 import android.content.Context;
 
@@ -11,7 +12,7 @@ import com.projects.shrungbhatt.blitzzardemo.GLRenderer;
 public class Shared 
 {
 	private static Context _context;
-	private static GLRenderer _renderer;
+	private static Renderer _renderer;
 	private static TextureManager _textureManager;
 
 	
@@ -24,11 +25,11 @@ public class Shared
 		_context = $c;
 	}
 
-	public static GLRenderer renderer()
+	public static Renderer renderer()
 	{
 		return _renderer;
 	}
-	public static void renderer(GLRenderer $r)
+	public static void renderer(Renderer $r)
 	{
 		_renderer = $r;
 	}

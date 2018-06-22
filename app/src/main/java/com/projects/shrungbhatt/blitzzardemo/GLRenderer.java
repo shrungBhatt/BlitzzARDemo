@@ -38,6 +38,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     private RenderExtension mWikitudeRenderExtension = null;
     private TreeMap<String, Renderable> mOccluders = new TreeMap<>();
     private TreeMap<String, Renderable> mRenderables = new TreeMap<>();
+    private TreeMap<String, Renderable> mEngines = new TreeMap<>();
 
     /**
      * This are the params for the displaying the object
@@ -62,7 +63,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 
 
-    public GLRenderer(RenderExtension wikitudeRenderExtension,Scene scene) {
+    public GLRenderer(RenderExtension wikitudeRenderExtension) {
         mWikitudeRenderExtension = wikitudeRenderExtension;
         /*
          * Until Wikitude SDK version 2.1 onDrawFrame triggered also a logic update inside the SDK core.
@@ -75,17 +76,6 @@ public class GLRenderer implements GLSurfaceView.Renderer {
          */
         mWikitudeRenderExtension.useSeparatedRenderAndLogicUpdates();
 
-
-        _scene = scene;
-
-        _scratchIntBuffer = IntBuffer.allocate(4);
-        _scratchFloatBuffer = FloatBuffer.allocate(4);
-
-        _textureManager = new TextureManager();
-        Shared.textureManager(_textureManager);
-
-        _activityManager = (ActivityManager) Shared.context().getSystemService( Context.ACTIVITY_SERVICE );
-        _memoryInfo = new ActivityManager.MemoryInfo();
     }
 
     @Override
@@ -110,6 +100,12 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             Renderable renderable = pairRenderables.getValue();
             renderable.onDrawFrame();
         }
+
+        for(TreeMap.Entry<String,Renderable> engineRenderable : mEngines.entrySet()){
+            Renderable renderable = engineRenderable.getValue();
+            renderable.onDrawFrame();
+        }
+
     }
 
     @Override
@@ -128,15 +124,16 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             renderable.onSurfaceCreated();
         }
 
+        for(TreeMap.Entry<String,Renderable> engineRenderable : mEngines.entrySet()){
+            Renderable renderable = engineRenderable.getValue();
+            renderable.onSurfaceCreated();
+        }
+
         Log.i(Min3d.TAG, "Renderer.onSurfaceCreated()");
 
-        RenderCaps.setRenderCaps(unused);
 
-        setGl(unused);
 
-        reset();
 
-        _scene.init();
     }
 
     @Override
@@ -158,9 +155,13 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         }
     }
 
-    public synchronized void setRenderablesForKey(final String key, final Renderable renderbale, final Renderable occluder) {
+    public synchronized void setRenderablesForKey(final String key, final Renderable renderbale, final Renderable occluder, final Engine engine) {
         if (occluder != null) {
             mOccluders.put(key, occluder);
+        }
+
+        if(engine != null){
+            mEngines.put(key,engine);
         }
 
         mRenderables.put(key, renderbale);
@@ -169,11 +170,13 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     public synchronized void removeRenderablesForKey(final String key) {
         mRenderables.remove(key);
         mOccluders.remove(key);
+        mEngines.remove(key);
     }
 
     public synchronized void removeAllRenderables() {
         mRenderables.clear();
         mOccluders.clear();
+        mEngines.clear();
     }
 
     public synchronized Renderable getRenderableForKey(final String key) {
@@ -184,6 +187,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         return mOccluders.get(key);
     }
 
+    public synchronized Renderable getEnginForKey(final String key){
+        return mEngines.get(key);
+    }
 
     //
 

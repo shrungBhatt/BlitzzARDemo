@@ -1,6 +1,7 @@
 package com.projects.shrungbhatt.blitzzardemo;
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.wikitude.NativeStartupConfiguration;
@@ -14,15 +15,15 @@ import com.wikitude.tracker.ObjectTrackerListener;
 import com.wikitude.tracker.TargetCollectionResource;
 import com.wikitude.tracker.TargetCollectionResourceLoadingCallback;
 
-import min3d.Shared;
+
 import min3d.core.Object3dContainer;
 import min3d.core.RendererActivity;
-import min3d.core.Scene;
 import min3d.parser.IParser;
 import min3d.parser.Parser;
 import min3d.vos.Light;
 
-public class MainActivity extends RendererActivity implements ObjectTrackerListener, ExternalRendering {
+
+public class MainActivity extends AppCompatActivity implements ObjectTrackerListener, ExternalRendering {
 
     public static final String TAG ="MainActivity";
 
@@ -67,11 +68,11 @@ public class MainActivity extends RendererActivity implements ObjectTrackerListe
         mDropDownAlert.show();
     }
 
-    @Override
+   /* @Override
     public void initScene() {
         super.initScene();
 
-       /* scene.lights().add(new Light());
+       *//* scene.lights().add(new Light());
         scene.lights().add(new Light());
         Light myLight = new Light();
         myLight.position.setZ(150);
@@ -80,26 +81,20 @@ public class MainActivity extends RendererActivity implements ObjectTrackerListe
         myParser.parse();
         faceObject3D = myParser.getParsedObject();
         faceObject3D.position().x = faceObject3D.position().y = faceObject3D.position().z = 0;
-        scene.addChild(faceObject3D);*/
+        scene.addChild(faceObject3D);*//*
 
-    }
-
-
-    private Scene getScene(){
-        scene.lights().add(new Light());
-        scene.lights().add(new Light());
-        Light myLight = new Light();
-        myLight.position.setZ(150);
-        scene.lights().add(myLight);
-        IParser myParser = Parser.createParser(Parser.Type.OBJ, getResources(), "com.projects.shrungbhatt.blitzzardemo:raw/camaro_obj",true);
-        myParser.parse();
-        faceObject3D = myParser.getParsedObject();
-        faceObject3D.position().x = faceObject3D.position().y = faceObject3D.position().z = 0;
-        scene.addChild(faceObject3D);
-        return scene;
     }
 
     @Override
+    public void onUpdateScene() {
+        super.onUpdateScene();
+
+//        faceObject3D.rotation().y++;
+    }*/
+
+
+
+       @Override
     protected void onResume() {
         super.onResume();
         mWikitudeSDK.onResume();
@@ -125,14 +120,8 @@ public class MainActivity extends RendererActivity implements ObjectTrackerListe
     @Override
     public void onRenderExtensionCreated(final RenderExtension renderExtension) {
 
-        Shared.context(this);
-
-        scene = new Scene(this);
-
-
-        mGLRenderer = new GLRenderer(renderExtension,getScene());
+        mGLRenderer = new GLRenderer(renderExtension);
         mView = new CustomSurfaceView(getApplicationContext(), mGLRenderer);
-        init(mGLRenderer,mView);
         mDriver = new Driver(mView, 30);
         setContentView(mView);
     }
@@ -162,13 +151,14 @@ public class MainActivity extends RendererActivity implements ObjectTrackerListe
 
         StrokedCube strokedCube = new StrokedCube();
         OccluderCube occluderCube = new OccluderCube();
+        Engine engine = new Engine(this);
 
-        mGLRenderer.setRenderablesForKey(target.getName(), strokedCube, occluderCube);
+        mGLRenderer.setRenderablesForKey(target.getName(), strokedCube, occluderCube,engine);
     }
 
     @Override
     public void onObjectTracked(ObjectTracker tracker, final ObjectTarget target) {
-        StrokedCube strokedCube = (StrokedCube)mGLRenderer.getRenderableForKey(target.getName());
+        /*StrokedCube strokedCube = (StrokedCube)mGLRenderer.getRenderableForKey(target.getName());
         if (strokedCube != null) {
             strokedCube.projectionMatrix = target.getProjectionMatrix();
             strokedCube.viewMatrix = target.getViewMatrix();
@@ -190,6 +180,22 @@ public class MainActivity extends RendererActivity implements ObjectTrackerListe
             occluderCube.setXScale(target.getTargetScale().x);
             occluderCube.setYScale(target.getTargetScale().y);
             occluderCube.setZScale(target.getTargetScale().z);
+        }
+*/
+
+        Engine engine = (Engine)mGLRenderer.getEnginForKey(target.getName());
+
+        if(engine != null){
+            engine.projectionMatrix = target.getProjectionMatrix();
+            engine.viewMatrix = target.getViewMatrix();
+
+
+            engine.setYTranslate(0.5f);
+
+
+            engine.setXScale(target.getTargetScale().x);
+            engine.setYScale(target.getTargetScale().y);
+            engine.setZScale(target.getTargetScale().z);
         }
     }
 

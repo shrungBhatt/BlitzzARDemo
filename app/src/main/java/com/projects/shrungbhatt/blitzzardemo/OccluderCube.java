@@ -36,9 +36,9 @@ public class OccluderCube extends Renderable{
     private int mScaleMatrixUniform = -1;
     private int mTranslateMatrixUniform = -1;
 
-    private float mXScale = 1.0f;
-    private float mYScale = 1.0f;
-    private float mZScale = 1.0f;
+    private float mXScale = 0.5f;
+    private float mYScale = 0.5f;
+    private float mZScale = 0.5f;
 
     private float mXTranslate = 0.0f;
     private float mYTranslate = 0.0f;
