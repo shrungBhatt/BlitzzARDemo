@@ -39,6 +39,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     private TreeMap<String, Renderable> mOccluders = new TreeMap<>();
     private TreeMap<String, Renderable> mRenderables = new TreeMap<>();
     private TreeMap<String, Renderable> mEngines = new TreeMap<>();
+    private TreeMap<String, Renderable> mSprites = new TreeMap<>();
 
     /**
      * This are the params for the displaying the object
@@ -106,6 +107,11 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             renderable.onDrawFrame();
         }
 
+        for(TreeMap.Entry<String,Renderable> spriteRenderable : mSprites.entrySet()){
+            Renderable renderable = spriteRenderable.getValue();
+            renderable.onDrawFrame();
+        }
+
     }
 
     @Override
@@ -126,6 +132,11 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
         for(TreeMap.Entry<String,Renderable> engineRenderable : mEngines.entrySet()){
             Renderable renderable = engineRenderable.getValue();
+            renderable.onSurfaceCreated();
+        }
+
+        for(TreeMap.Entry<String,Renderable> spriteRenderable : mEngines.entrySet()){
+            Renderable renderable = spriteRenderable.getValue();
             renderable.onSurfaceCreated();
         }
 
@@ -155,13 +166,19 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         }
     }
 
-    public synchronized void setRenderablesForKey(final String key, final Renderable renderbale, final Renderable occluder, final Engine engine) {
+    public synchronized void setRenderablesForKey(final String key, final Renderable renderbale,
+                                                  final Renderable occluder, final Engine engine,
+                                                  final Sprite sprite) {
         if (occluder != null) {
             mOccluders.put(key, occluder);
         }
 
         if(engine != null){
             mEngines.put(key,engine);
+        }
+
+        if(sprite != null){
+            mSprites.put(key,sprite);
         }
 
         mRenderables.put(key, renderbale);
@@ -171,12 +188,14 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         mRenderables.remove(key);
         mOccluders.remove(key);
         mEngines.remove(key);
+        mSprites.remove(key);
     }
 
     public synchronized void removeAllRenderables() {
         mRenderables.clear();
         mOccluders.clear();
         mEngines.clear();
+        mSprites.clear();
     }
 
     public synchronized Renderable getRenderableForKey(final String key) {
@@ -189,6 +208,10 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
     public synchronized Renderable getEnginForKey(final String key){
         return mEngines.get(key);
+    }
+
+    public synchronized Renderable getSpriteForKey(final String key){
+        return mSprites.get(key);
     }
 
     //

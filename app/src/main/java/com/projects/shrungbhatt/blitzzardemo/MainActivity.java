@@ -19,10 +19,7 @@ import com.wikitude.tracker.TargetCollectionResourceLoadingCallback;
 
 
 import min3d.core.Object3dContainer;
-import min3d.core.RendererActivity;
-import min3d.parser.IParser;
-import min3d.parser.Parser;
-import min3d.vos.Light;
+
 
 
 public class MainActivity extends AppCompatActivity implements ObjectTrackerListener, ExternalRendering {
@@ -58,7 +55,9 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
         mWikitudeSDK.onCreate(getApplicationContext(), this, startupConfiguration);
 
-        mTargetCollectionResource = mWikitudeSDK.getTrackerManager().createTargetCollectionResource("file:///android_asset/jeep_target.wto", new TargetCollectionResourceLoadingCallback() {
+        mTargetCollectionResource = mWikitudeSDK.getTrackerManager().
+                createTargetCollectionResource("file:///android_asset/jeep_target.wto",
+                        new TargetCollectionResourceLoadingCallback() {
             @Override
             public void onError(int errorCode, String errorMessage) {
                 Log.v(TAG, "Failed to load target collection resource. Reason: " + errorMessage);
@@ -66,7 +65,8 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
             @Override
             public void onFinish() {
-                mWikitudeSDK.getTrackerManager().createObjectTracker(mTargetCollectionResource, MainActivity.this, null);
+                mWikitudeSDK.getTrackerManager().createObjectTracker(mTargetCollectionResource,
+                        MainActivity.this, null);
             }
         });
 
@@ -76,29 +76,7 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         mDropDownAlert.show();
     }
 
-   /* @Override
-    public void initScene() {
-        super.initScene();
 
-       *//* scene.lights().add(new Light());
-        scene.lights().add(new Light());
-        Light myLight = new Light();
-        myLight.position.setZ(150);
-        scene.lights().add(myLight);
-        IParser myParser = Parser.createParser(Parser.Type.OBJ, getResources(), "com.projects.shrungbhatt.blitzzardemo:raw/camaro_obj",true);
-        myParser.parse();
-        faceObject3D = myParser.getParsedObject();
-        faceObject3D.position().x = faceObject3D.position().y = faceObject3D.position().z = 0;
-        scene.addChild(faceObject3D);*//*
-
-    }
-
-    @Override
-    public void onUpdateScene() {
-        super.onUpdateScene();
-
-//        faceObject3D.rotation().y++;
-    }*/
 
 
 
@@ -160,8 +138,9 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         StrokedCube strokedCube = new StrokedCube();
         OccluderCube occluderCube = new OccluderCube();
         Engine engine = new Engine(this);
+        Sprite sprite = new Sprite(this);
 
-        mGLRenderer.setRenderablesForKey(target.getName(), strokedCube, occluderCube,engine);
+        mGLRenderer.setRenderablesForKey(target.getName(), strokedCube, occluderCube,engine,sprite);
     }
 
     @Override
@@ -191,24 +170,43 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         }
 */
 
-        Engine engine = (Engine)mGLRenderer.getEnginForKey(target.getName());
+//        Engine engine = (Engine)mGLRenderer.getEnginForKey(target.getName());
+//
+//        if(engine != null){
+//            engine.projectionMatrix = target.getProjectionMatrix();
+//            engine.viewMatrix = target.getViewMatrix();
+//
+//
+//            engine.setYTranslate(0.5f);
+//
+//
+//            engine.setXScale(target.getTargetScale().x);
+//            engine.setYScale(target.getTargetScale().y);
+//            engine.setZScale(target.getTargetScale().z);
+//        }
 
-        if(engine != null){
-            engine.projectionMatrix = target.getProjectionMatrix();
-            engine.viewMatrix = target.getViewMatrix();
+
+        Sprite sprite = (Sprite)mGLRenderer.getSpriteForKey(target.getName());
+
+        if(sprite != null){
+            sprite.projectionMatrix = target.getProjectionMatrix();
+            sprite.viewMatrix = target.getViewMatrix();
 
 
-            engine.setYTranslate(0.5f);
+            sprite.setYTranslate(0.45f);
+
+            sprite.setXTranslate(-0.32f);
 
 
-            engine.setXScale(target.getTargetScale().x);
-            engine.setYScale(target.getTargetScale().y);
-            engine.setZScale(target.getTargetScale().z);
+            sprite.setXScale(target.getTargetScale().x);
+            sprite.setYScale(target.getTargetScale().y);
+            sprite.setZScale(target.getTargetScale().z);
+
         }
 
         if(mCount==0) {
-            AudioUtils.getInstance(this, R.raw.splash_sound).playBookServiceSound();
-            mVibrator.vibrate(700);
+            AudioUtils.getInstance(this, R.raw.splash_sound).playSound();
+//            mVibrator.vibrate(700);
             mCount--;
         }
 

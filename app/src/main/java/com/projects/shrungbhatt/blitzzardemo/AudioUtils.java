@@ -33,7 +33,7 @@ public class AudioUtils {
         return sMAudioUtils_;
     }
 
-    public void playBookServiceSound() {
+    public void playSound() {
         try {
             if (mediaPlayer != null &&
                     mediaPlayer.isPlaying()) {
@@ -50,7 +50,7 @@ public class AudioUtils {
         }
     }
 
-    public synchronized void stopBookServiceSound() {
+    public synchronized void stopSound() {
         if (mediaPlayer != null) {
             try {
                 mediaPlayer.stop();

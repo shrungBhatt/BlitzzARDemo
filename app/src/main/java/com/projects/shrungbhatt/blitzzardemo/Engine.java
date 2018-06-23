@@ -33,7 +33,7 @@ public class Engine extends Renderable {
             "uniform mat4 u_translation;" +
             "void main()" +
             "{" +
-            "  gl_Position = u_projection * u_modelView * u_translation * v_position;" +
+            "  gl_Position = u_projection * u_modelView * u_translation * u_scale * v_position;" +
             "v_texCoordinate = a_texCoordinate;" +
             "}";
 
@@ -75,10 +75,10 @@ public class Engine extends Renderable {
     };
 
     final float mEngineTextureVertices[] = {
-            0.0f, 0.0f,
             1.0f, 0.0f,
             1.0f, 1.0f,
-            0.0f, 1.0f
+            0.0f, 1.0f,
+            0.0f, 0.0f
     };
 
 
@@ -188,7 +188,7 @@ public class Engine extends Renderable {
                 mXTranslate,        mYTranslate,        mZTranslate,        1.0f
         };
 
-//        GLES20.glUniformMatrix4fv(mScaleMatrixUniform, 1, false, scaleMatrix, 0);
+        GLES20.glUniformMatrix4fv(mScaleMatrixUniform, 1, false, scaleMatrix, 0);
         GLES20.glUniformMatrix4fv(mTranslateMatrixUniform, 1, false, translateMatrix, 0);
 
         GLES20.glEnable(GLES20.GL_BLEND);
@@ -254,7 +254,7 @@ public class Engine extends Renderable {
         mPositionSlot = GLES20.glGetAttribLocation(mAugmentationProgram, "v_position");
         mModelViewUniform = GLES20.glGetUniformLocation(mAugmentationProgram, "u_modelView");
         mProjectionUniform = GLES20.glGetUniformLocation(mAugmentationProgram, "u_projection");
-//        mScaleMatrixUniform = GLES20.glGetUniformLocation(mAugmentationProgram, "u_scale");
+        mScaleMatrixUniform = GLES20.glGetUniformLocation(mAugmentationProgram, "u_scale");
         mTranslateMatrixUniform = GLES20.glGetUniformLocation(mAugmentationProgram, "u_translation");
 
         mColorHandle = GLES20.glGetUniformLocation(mAugmentationProgram,"v_color");
