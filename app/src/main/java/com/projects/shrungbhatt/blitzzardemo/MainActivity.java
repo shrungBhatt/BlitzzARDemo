@@ -119,7 +119,11 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
             @Override
             public void run() {
                 mDropDownAlert.setText("Scan Target:");
-                mDropDownAlert.addImages("firetruck_image.png");
+                try {
+                    mDropDownAlert.addImages("firetruck_image.png");
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 mDropDownAlert.setTextWeight(0.5f);
             }
         });
@@ -193,10 +197,9 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
             sprite.viewMatrix = target.getViewMatrix();
 
 
-            sprite.setYTranslate(0.45f);
+            sprite.setYTranslate(0.5f);
 
-            sprite.setXTranslate(-0.32f);
-
+            sprite.setXTranslate(-0.3f);
 
             sprite.setXScale(target.getTargetScale().x);
             sprite.setYScale(target.getTargetScale().y);
@@ -206,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
         if(mCount==0) {
             AudioUtils.getInstance(this, R.raw.splash_sound).playSound();
-//            mVibrator.vibrate(700);
+            mVibrator.vibrate(700);
             mCount--;
         }
 
