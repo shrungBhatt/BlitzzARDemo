@@ -43,6 +43,11 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
     private int mCount = 0;
 
+    private String mSelectedAugmentation;
+
+    private ObjectTracker mObjectTracker = null;
+    private ObjectTarget mObjectTarget = null;
+
 
     private ConstraintLayout mParentConstraintLayout;
 
@@ -60,26 +65,6 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         startupConfiguration.setCameraResolution(CameraSettings.CameraResolution.AUTO);
 
         mWikitudeSDK.onCreate(getApplicationContext(), this, startupConfiguration);
-
-        /*mTargetCollectionResource = mWikitudeSDK.getTrackerManager().
-                createTargetCollectionResource("file:///android_asset/jeep_engine.wto",
-                        new TargetCollectionResourceLoadingCallback() {
-                            @Override
-                            public void onError(int errorCode, String errorMessage) {
-                                Log.v(TAG, "Failed to load target collection resource. Reason: " + errorMessage);
-                            }
-
-                            @Override
-                            public void onFinish() {
-                                mWikitudeSDK.getTrackerManager().createObjectTracker(mTargetCollectionResource,
-                                        MainActivity.this, null);
-                            }
-                        });
-
-        mDropDownAlert = new DropDownAlert(this);
-        mDropDownAlert.setText("Loading Target:");
-        mDropDownAlert.setTextWeight(1);
-        mDropDownAlert.show();*/
 
 //        createTargetResource(Const.DETECT_ENGINE);
     }
@@ -124,12 +109,12 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
             @Override
             public void run() {
                 mDropDownAlert.setText("Scan Target:");
-                try {
+                /*try {
                     mDropDownAlert.addImages("firetruck_image.png");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                mDropDownAlert.setTextWeight(0.5f);
+                mDropDownAlert.setTextWeight(0.5f);*/
             }
         });
     }
@@ -144,78 +129,64 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         Log.v(TAG, "Recognized target " + target.getName());
         mDropDownAlert.dismiss();
 
+        mObjectTarget = target;
+        mObjectTracker = tracker;
+
         StrokedCube strokedCube = new StrokedCube();
         OccluderCube occluderCube = new OccluderCube();
         Engine engine = new Engine(this);
         Sprite sprite = new Sprite(this);
+        DiscBrake discBrake = new DiscBrake(this);
 
-        mGLRenderer.setRenderablesForKey(target.getName(), strokedCube, occluderCube, engine, sprite);
+        mGLRenderer.setRenderablesForKey(target.getName(), strokedCube, occluderCube, engine,
+                sprite, discBrake);
     }
 
     @Override
     public void onObjectTracked(ObjectTracker tracker, final ObjectTarget target) {
-        /*StrokedCube strokedCube = (StrokedCube)mGLRenderer.getRenderableForKey(target.getName());
-        if (strokedCube != null) {
-            strokedCube.projectionMatrix = target.getProjectionMatrix();
-            strokedCube.viewMatrix = target.getViewMatrix();
 
-            strokedCube.setYTranslate(0.5f);
+        switch (mSelectedAugmentation) {
 
-            strokedCube.setXScale(target.getTargetScale().x);
-            strokedCube.setYScale(target.getTargetScale().y);
-            strokedCube.setZScale(target.getTargetScale().z);
-        }
+            case Const.DETECT_ENGINE:
+                Sprite sprite = (Sprite) mGLRenderer.getSpriteForKey(target.getName());
 
-        OccluderCube occluderCube = (OccluderCube)mGLRenderer.getOccluderForKey(target.getName());
-        if (occluderCube != null) {
-            occluderCube.projectionMatrix = target.getProjectionMatrix();
-            occluderCube.viewMatrix = target.getViewMatrix();
-
-            occluderCube.setYTranslate(0.5f);
-
-            occluderCube.setXScale(target.getTargetScale().x);
-            occluderCube.setYScale(target.getTargetScale().y);
-            occluderCube.setZScale(target.getTargetScale().z);
-        }
-*/
-
-//        Engine engine = (Engine)mGLRenderer.getEnginForKey(target.getName());
-//
-//        if(engine != null){
-//            engine.projectionMatrix = target.getProjectionMatrix();
-//            engine.viewMatrix = target.getViewMatrix();
-//
-//
-//            engine.setYTranslate(0.5f);
-//
-//
-//            engine.setXScale(target.getTargetScale().x);
-//            engine.setYScale(target.getTargetScale().y);
-//            engine.setZScale(target.getTargetScale().z);
-//        }
+                if (sprite != null) {
+                    sprite.projectionMatrix = target.getProjectionMatrix();
+                    sprite.viewMatrix = target.getViewMatrix();
 
 
-        Sprite sprite = (Sprite) mGLRenderer.getSpriteForKey(target.getName());
+                    sprite.setYTranslate(0.5f);
 
-        if (sprite != null) {
-            sprite.projectionMatrix = target.getProjectionMatrix();
-            sprite.viewMatrix = target.getViewMatrix();
+                    sprite.setXTranslate(-0.3f);
 
+                    sprite.setXScale(target.getTargetScale().x);
+                    sprite.setYScale(target.getTargetScale().y);
+                    sprite.setZScale(target.getTargetScale().z);
 
-            sprite.setYTranslate(0.5f);
-
-            sprite.setXTranslate(-0.3f);
-
-            sprite.setXScale(target.getTargetScale().x);
-            sprite.setYScale(target.getTargetScale().y);
-            sprite.setZScale(target.getTargetScale().z);
-
-        }
-
-        if (mCount == 0) {
-            AudioUtils.getInstance(this, R.raw.splash_sound).playSound();
+                }
+                if (mCount == 0) {
+                    AudioUtils.getInstance(this, R.raw.splash_sound).playSound();
 //            mVibrator.vibrate(700);
-            mCount--;
+                    mCount--;
+                }
+                break;
+            case Const.DETECT_BRAKES:
+                DiscBrake discBrake = (DiscBrake) mGLRenderer.getDiscBrakes(target.getName());
+
+                if (discBrake != null) {
+                    discBrake.projectionMatrix = target.getProjectionMatrix();
+                    discBrake.viewMatrix = target.getViewMatrix();
+
+                    discBrake.setYTranslate(0.1f);
+
+                    discBrake.setXTranslate(0.3f);
+
+                    discBrake.setXScale(target.getTargetScale().x);
+                    discBrake.setYScale(target.getTargetScale().y);
+                    discBrake.setZScale(target.getTargetScale().z);
+                }
+                break;
+
         }
 
 
@@ -292,20 +263,29 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int selectedPosition, long l) {
 
+
+        if(mObjectTracker != null && mObjectTarget != null){
+            onObjectLost(mObjectTracker,mObjectTarget);
+        }
+
         ((TextView) view).setText(null);
 
-        switch (selectedPosition){
+        switch (selectedPosition) {
             case Const.FILTER_OF_ENGINE:
                 createTargetResource(Const.DETECT_ENGINE);
+                mSelectedAugmentation = Const.DETECT_ENGINE;
                 break;
             case Const.FILTER_OF_BRAKES:
                 createTargetResource(Const.DETECT_BRAKES);
+                mSelectedAugmentation = Const.DETECT_BRAKES;
                 break;
             case Const.FILTER_OF_DASHBOARD:
                 createTargetResource(Const.DETECT_DASHBOARD);
+                mSelectedAugmentation = Const.DETECT_DASHBOARD;
                 break;
             case Const.FILTER_OF_ALL:
                 createTargetResource(Const.DETECT_ALL);
+                mSelectedAugmentation = Const.DETECT_ALL;
                 break;
 
 

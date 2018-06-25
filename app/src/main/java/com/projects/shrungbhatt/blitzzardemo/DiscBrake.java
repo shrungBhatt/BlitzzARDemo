@@ -11,7 +11,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
-public class Sprite extends Renderable {
+public class DiscBrake extends Renderable {
 
     private Context mContext;
 
@@ -87,7 +87,7 @@ public class Sprite extends Renderable {
     // Set color with red, green, blue and alpha (opacity) values
     float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-    public Sprite(Context context) {
+    public DiscBrake(Context context) {
 
         mContext = context;
 
@@ -107,7 +107,7 @@ public class Sprite extends Renderable {
 
         GLES20.glLinkProgram(mProgram);
 
-        mTextureHandle = loadTexture(mContext, R.drawable.generator);
+        mTextureHandle = loadTexture(mContext, R.drawable.disc_brake);
 
         mCubeTextureCoordinates = ByteBuffer.allocateDirect(cubeTextureCoordinateData.length * 4).
                 order(ByteOrder.nativeOrder()).asFloatBuffer();

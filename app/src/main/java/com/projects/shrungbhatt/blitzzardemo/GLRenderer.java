@@ -23,6 +23,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     private TreeMap<String, Renderable> mRenderables = new TreeMap<>();
     private TreeMap<String, Renderable> mEngines = new TreeMap<>();
     private TreeMap<String, Renderable> mSprites = new TreeMap<>();
+    private TreeMap<String, Renderable> mDiscBrake = new TreeMap<>();
 
     /**
      * This are the params for the displaying the object
@@ -75,7 +76,16 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
         for(TreeMap.Entry<String,Renderable> spriteRenderable : mSprites.entrySet()){
             Renderable renderable = spriteRenderable.getValue();
-            renderable.onDrawFrame();
+            if(renderable != null) {
+                renderable.onDrawFrame();
+            }
+        }
+
+        for(TreeMap.Entry<String,Renderable> discBrake : mDiscBrake.entrySet()){
+            Renderable renderable = discBrake.getValue();
+            if(renderable != null) {
+                renderable.onDrawFrame();
+            }
         }
 
     }
@@ -101,8 +111,13 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             renderable.onSurfaceCreated();
         }
 
-        for(TreeMap.Entry<String,Renderable> spriteRenderable : mEngines.entrySet()){
+        for(TreeMap.Entry<String,Renderable> spriteRenderable : mSprites.entrySet()){
             Renderable renderable = spriteRenderable.getValue();
+            renderable.onSurfaceCreated();
+        }
+
+        for(TreeMap.Entry<String,Renderable> discBrake : mDiscBrake.entrySet()){
+            Renderable renderable = discBrake.getValue();
             renderable.onSurfaceCreated();
         }
 
@@ -132,7 +147,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
     public synchronized void setRenderablesForKey(final String key, final Renderable renderbale,
                                                   final Renderable occluder, final Engine engine,
-                                                  final Sprite sprite) {
+                                                  final Sprite sprite,final DiscBrake discBrake) {
         if (occluder != null) {
             mOccluders.put(key, occluder);
         }
@@ -145,6 +160,10 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             mSprites.put(key,sprite);
         }
 
+        if(discBrake != null){
+            mDiscBrake.put(key,discBrake);
+        }
+
         mRenderables.put(key, renderbale);
     }
 
@@ -153,6 +172,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         mOccluders.remove(key);
         mEngines.remove(key);
         mSprites.remove(key);
+        mDiscBrake.remove(key);
     }
 
     public synchronized void removeAllRenderables() {
@@ -160,6 +180,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         mOccluders.clear();
         mEngines.clear();
         mSprites.clear();
+        mDiscBrake.clear();
     }
 
     public synchronized Renderable getRenderableForKey(final String key) {
@@ -178,5 +199,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         return mSprites.get(key);
     }
 
+    public synchronized Renderable getDiscBrakes(final String key){
+        return mDiscBrake.get(key);
+    }
 
 }
