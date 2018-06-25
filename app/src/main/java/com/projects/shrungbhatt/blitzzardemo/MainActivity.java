@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
     private TargetCollectionResource mTargetCollectionResource;
     private DropDownAlert mDropDownAlert;
-    private Object3dContainer faceObject3D;
 
     private Vibrator mVibrator;
     private int mCount = 0;
@@ -105,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
     @Override
     public void onRenderExtensionCreated(final RenderExtension renderExtension) {
-
         mGLRenderer = new GLRenderer(renderExtension);
         mView = new CustomSurfaceView(getApplicationContext(), mGLRenderer);
         mDriver = new Driver(mView, 30);
@@ -209,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
         if(mCount==0) {
             AudioUtils.getInstance(this, R.raw.splash_sound).playSound();
-            mVibrator.vibrate(700);
+//            mVibrator.vibrate(700);
             mCount--;
         }
 

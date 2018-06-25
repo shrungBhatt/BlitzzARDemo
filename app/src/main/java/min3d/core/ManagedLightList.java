@@ -41,15 +41,15 @@ public class ManagedLightList
 		Log.i(Min3d.TAG, "ManagedLightList.reset()");
 
 		_availGlIndices = new ArrayList<Integer>();
-		for (int i = 0; i < GLRenderer.NUM_GLLIGHTS; i++) {
+		for (int i = 0; i < Renderer.NUM_GLLIGHTS; i++) {
 			_availGlIndices.add(i);
 		}
 
 		_lightToGlIndex = new HashMap<Light, Integer>();
 
-		_glIndexEnabled = new boolean[GLRenderer.NUM_GLLIGHTS];
-		_glIndexEnabledDirty = new boolean[GLRenderer.NUM_GLLIGHTS];
-		for (int i = 0; i < GLRenderer.NUM_GLLIGHTS; i++) {
+		_glIndexEnabled = new boolean[Renderer.NUM_GLLIGHTS];
+		_glIndexEnabledDirty = new boolean[Renderer.NUM_GLLIGHTS];
+		for (int i = 0; i < Renderer.NUM_GLLIGHTS; i++) {
 			_glIndexEnabled[i] = false;
 			_glIndexEnabledDirty[i] = true;
 		}
@@ -63,7 +63,7 @@ public class ManagedLightList
 			return false;
 		}
 
-		if (_lights.size() > GLRenderer.NUM_GLLIGHTS)
+		if (_lights.size() > Renderer.NUM_GLLIGHTS)
 			throw new Error("Exceeded maximum number of Lights");
 
 		boolean result = _lights.add($light);
