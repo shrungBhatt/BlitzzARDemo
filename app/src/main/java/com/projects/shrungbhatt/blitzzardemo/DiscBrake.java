@@ -57,9 +57,9 @@ public class DiscBrake extends Renderable {
 
     static final int COORDS_PER_VERTEX = 2;
 
-    private float mXScale = 1.0f;
-    private float mYScale = 1.0f;
-    private float mZScale = 1.0f;
+    private float mXScale = 1.8f;
+    private float mYScale = 1.8f;
+    private float mZScale = 1.8f;
 
     private float mXTranslate = 0.0f;
     private float mYTranslate = 0.0f;

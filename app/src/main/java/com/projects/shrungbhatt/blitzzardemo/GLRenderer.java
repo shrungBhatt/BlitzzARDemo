@@ -191,7 +191,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         return mOccluders.get(key);
     }
 
-    public synchronized Renderable getEnginForKey(final String key){
+    public synchronized Renderable getEngineForKey(final String key){
         return mEngines.get(key);
     }
 

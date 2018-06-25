@@ -155,9 +155,9 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
                     sprite.viewMatrix = target.getViewMatrix();
 
 
-                    sprite.setYTranslate(0.5f);
+                    sprite.setYTranslate(0.4f);
 
-                    sprite.setXTranslate(-0.3f);
+                    sprite.setXTranslate(0.1f);
 
                     sprite.setXScale(target.getTargetScale().x);
                     sprite.setYScale(target.getTargetScale().y);
@@ -166,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
                 }
                 if (mCount == 0) {
                     AudioUtils.getInstance(this, R.raw.splash_sound).playSound();
-//            mVibrator.vibrate(700);
                     mCount--;
                 }
                 break;
@@ -177,16 +176,68 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
                     discBrake.projectionMatrix = target.getProjectionMatrix();
                     discBrake.viewMatrix = target.getViewMatrix();
 
-                    discBrake.setYTranslate(0.1f);
+                    discBrake.setYTranslate(-0.4f);
 
-                    discBrake.setXTranslate(0.3f);
+                    discBrake.setXTranslate(-0.1f);
 
-                    discBrake.setXScale(target.getTargetScale().x);
-                    discBrake.setYScale(target.getTargetScale().y);
-                    discBrake.setZScale(target.getTargetScale().z);
+                    discBrake.setXScale(1.0f);
+                    discBrake.setYScale(1.0f);
+                    discBrake.setZScale(1.0f);
+
                 }
                 break;
 
+            case Const.DETECT_ALL:
+                Sprite sprite1 = (Sprite) mGLRenderer.getSpriteForKey(target.getName());
+
+                if (sprite1 != null) {
+                    sprite1.projectionMatrix = target.getProjectionMatrix();
+                    sprite1.viewMatrix = target.getViewMatrix();
+
+
+                    sprite1.setYTranslate(0.5f);
+
+                    sprite1.setXTranslate(-0.3f);
+
+                    sprite1.setXScale(target.getTargetScale().x);
+                    sprite1.setYScale(target.getTargetScale().y);
+                    sprite1.setZScale(target.getTargetScale().z);
+
+                }
+
+                DiscBrake discBrake1 = (DiscBrake) mGLRenderer.getDiscBrakes(target.getName());
+
+                if (discBrake1 != null) {
+                    discBrake1.projectionMatrix = target.getProjectionMatrix();
+                    discBrake1.viewMatrix = target.getViewMatrix();
+
+                    discBrake1.setYTranslate(0.1f);
+
+                    discBrake1.setXTranslate(0.28f);
+
+                    discBrake1.setXScale(0.7f);
+                    discBrake1.setYScale(0.7f);
+                    discBrake1.setZScale(0.7f);
+                }
+
+            case Const.TARGET_DASHBOARD:
+                Sprite dashboard = (Sprite) mGLRenderer.getSpriteForKey(target.getName());
+
+                if (dashboard != null) {
+                    dashboard.projectionMatrix = target.getProjectionMatrix();
+                    dashboard.viewMatrix = target.getViewMatrix();
+
+
+                    dashboard.setYTranslate(0.4f);
+
+                    dashboard.setXTranslate(0.1f);
+
+                    dashboard.setXScale(target.getTargetScale().x);
+                    dashboard.setYScale(target.getTargetScale().y);
+                    dashboard.setZScale(target.getTargetScale().z);
+
+                }
+                break;
         }
 
 
@@ -264,8 +315,8 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
     public void onItemSelected(AdapterView<?> adapterView, View view, int selectedPosition, long l) {
 
 
-        if(mObjectTracker != null && mObjectTarget != null){
-            onObjectLost(mObjectTracker,mObjectTarget);
+        if (mObjectTracker != null && mObjectTarget != null) {
+            onObjectLost(mObjectTracker, mObjectTarget);
         }
 
         ((TextView) view).setText(null);
