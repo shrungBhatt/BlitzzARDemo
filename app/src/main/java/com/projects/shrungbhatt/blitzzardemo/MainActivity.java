@@ -1,9 +1,15 @@
 package com.projects.shrungbhatt.blitzzardemo;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -50,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
 
     private ConstraintLayout mParentConstraintLayout;
+    private final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +64,25 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         setContentView(R.layout.activity_main);
 
         mParentConstraintLayout = findViewById(R.id.parent_constraint_layout);
+
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    MY_PERMISSIONS_REQUEST_CAMERA);
+
+        } else {
+
+            initializeWikitudeSdk();
+
+        }
+
+//        createTargetResource(Const.DETECT_ENGINE);
+    }
+
+    private void initializeWikitudeSdk() {
 
         mWikitudeSDK = new WikitudeSDK(this);
         NativeStartupConfiguration startupConfiguration = new NativeStartupConfiguration();
@@ -66,37 +92,41 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
         mWikitudeSDK.onCreate(getApplicationContext(), this, startupConfiguration);
 
-//        createTargetResource(Const.DETECT_ENGINE);
     }
-
 
     @Override
     protected void onResume() {
         super.onResume();
-        mWikitudeSDK.onResume();
-        mView.onResume();
-        mDriver.start();
+        if(mWikitudeSDK != null) {
+            mWikitudeSDK.onResume();
+            mView.onResume();
+            mDriver.start();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mWikitudeSDK.onPause();
-        mView.onPause();
-        mDriver.stop();
+        if(mWikitudeSDK != null) {
+            mWikitudeSDK.onPause();
+            mView.onPause();
+            mDriver.stop();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mWikitudeSDK.clearCache();
-        mWikitudeSDK.onDestroy();
+        if(mWikitudeSDK != null) {
+            mWikitudeSDK.clearCache();
+            mWikitudeSDK.onDestroy();
+        }
     }
 
     @Override
     public void onRenderExtensionCreated(final RenderExtension renderExtension) {
         mGLRenderer = new GLRenderer(renderExtension);
-        createView(getApplicationContext(), mGLRenderer);
+        createGlSurfaceView(getApplicationContext(), mGLRenderer);
 //        mView = new CustomSurfaceView(getApplicationContext(), mGLRenderer);
 //        mDriver = new Driver(mView, 30);
 //        setContentView(mView);
@@ -148,20 +178,20 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         switch (mSelectedAugmentation) {
 
             case Const.DETECT_ENGINE:
-                Sprite sprite = (Sprite) mGLRenderer.getSpriteForKey(target.getName());
+                Sprite engine = (Sprite) mGLRenderer.getSpriteForKey(target.getName());
 
-                if (sprite != null) {
-                    sprite.projectionMatrix = target.getProjectionMatrix();
-                    sprite.viewMatrix = target.getViewMatrix();
+                if (engine != null) {
+                    engine.projectionMatrix = target.getProjectionMatrix();
+                    engine.viewMatrix = target.getViewMatrix();
 
 
-                    sprite.setYTranslate(0.4f);
+                    engine.setYTranslate(0.4f);
 
-                    sprite.setXTranslate(0.1f);
+                    engine.setXTranslate(0.1f);
 
-                    sprite.setXScale(target.getTargetScale().x);
-                    sprite.setYScale(target.getTargetScale().y);
-                    sprite.setZScale(target.getTargetScale().z);
+                    engine.setXScale(target.getTargetScale().x);
+                    engine.setYScale(target.getTargetScale().y);
+                    engine.setZScale(target.getTargetScale().z);
 
                 }
                 if (mCount == 0) {
@@ -180,47 +210,48 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
                     discBrake.setXTranslate(-0.1f);
 
-                    discBrake.setXScale(1.0f);
-                    discBrake.setYScale(1.0f);
-                    discBrake.setZScale(1.0f);
+                    discBrake.setXScale(1.5f);
+                    discBrake.setYScale(1.5f);
+                    discBrake.setZScale(1.5f);
 
                 }
                 break;
 
             case Const.DETECT_ALL:
-                Sprite sprite1 = (Sprite) mGLRenderer.getSpriteForKey(target.getName());
+                Sprite engineForAllView = (Sprite) mGLRenderer.getSpriteForKey(target.getName());
 
-                if (sprite1 != null) {
-                    sprite1.projectionMatrix = target.getProjectionMatrix();
-                    sprite1.viewMatrix = target.getViewMatrix();
+                if (engineForAllView != null) {
+                    engineForAllView.projectionMatrix = target.getProjectionMatrix();
+                    engineForAllView.viewMatrix = target.getViewMatrix();
 
 
-                    sprite1.setYTranslate(0.5f);
+                    engineForAllView.setYTranslate(0.45f);
 
-                    sprite1.setXTranslate(-0.3f);
+                    engineForAllView.setXTranslate(-0.32f);
 
-                    sprite1.setXScale(target.getTargetScale().x);
-                    sprite1.setYScale(target.getTargetScale().y);
-                    sprite1.setZScale(target.getTargetScale().z);
+                    engineForAllView.setXScale(target.getTargetScale().x);
+                    engineForAllView.setYScale(target.getTargetScale().y);
+                    engineForAllView.setZScale(target.getTargetScale().z);
 
                 }
 
-                DiscBrake discBrake1 = (DiscBrake) mGLRenderer.getDiscBrakes(target.getName());
+                DiscBrake discBrakeForAllView = (DiscBrake) mGLRenderer.getDiscBrakes(target.getName());
 
-                if (discBrake1 != null) {
-                    discBrake1.projectionMatrix = target.getProjectionMatrix();
-                    discBrake1.viewMatrix = target.getViewMatrix();
+                if (discBrakeForAllView != null) {
+                    discBrakeForAllView.projectionMatrix = target.getProjectionMatrix();
+                    discBrakeForAllView.viewMatrix = target.getViewMatrix();
 
-                    discBrake1.setYTranslate(0.1f);
+                    discBrakeForAllView.setYTranslate(0.1f);
 
-                    discBrake1.setXTranslate(0.28f);
+                    discBrakeForAllView.setXTranslate(0.28f);
 
-                    discBrake1.setXScale(0.7f);
-                    discBrake1.setYScale(0.7f);
-                    discBrake1.setZScale(0.7f);
+                    discBrakeForAllView.setXScale(0.7f);
+                    discBrakeForAllView.setYScale(0.7f);
+                    discBrakeForAllView.setZScale(0.7f);
                 }
+                break;
 
-            case Const.TARGET_DASHBOARD:
+            case Const.DETECT_DASHBOARD:
                 Sprite dashboard = (Sprite) mGLRenderer.getSpriteForKey(target.getName());
 
                 if (dashboard != null) {
@@ -256,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
      * @param context
      * @param glRenderer
      */
-    private void createView(Context context, GLRenderer glRenderer) {
+    private void createGlSurfaceView(Context context, GLRenderer glRenderer) {
 
         mView = new CustomSurfaceView(context, glRenderer);
 
@@ -280,12 +311,12 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         spinner.setId(CHILD_FILTER_SPINNER);
 
         ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(
-                dpToPx(48), dpToPx(48));
+                dpToPx(40), dpToPx(40));
 
 
         spinner.setLayoutParams(layoutParams);
 
-        spinner.setBackground(getResources().getDrawable(R.drawable.filter_icon));
+        spinner.setBackground(getResources().getDrawable(R.drawable.filter));
 
 
         mParentConstraintLayout.addView(spinner, 1);
@@ -361,16 +392,16 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         switch (targetConstant) {
 
             case Const.DETECT_ALL:
-                getTargetResource(Const.TARGET_ALL);
+                getTargetResourceFromAssets(Const.TARGET_ALL);
                 break;
             case Const.DETECT_ENGINE:
-                getTargetResource(Const.TARGET_ENGINE);
+                getTargetResourceFromAssets(Const.TARGET_ENGINE);
                 break;
             case Const.DETECT_BRAKES:
-                getTargetResource(Const.TARGET_BRAKES);
+                getTargetResourceFromAssets(Const.TARGET_BRAKES);
                 break;
             case Const.DETECT_DASHBOARD:
-                getTargetResource(Const.TARGET_DASHBOARD);
+                getTargetResourceFromAssets(Const.TARGET_DASHBOARD);
                 break;
 
         }
@@ -379,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
     }
 
 
-    private void getTargetResource(final String targetFileName) {
+    private void getTargetResourceFromAssets(final String targetFileName) {
 
         mTargetCollectionResource = mWikitudeSDK.getTrackerManager().
                 createTargetCollectionResource("file:///android_asset/" + targetFileName,
@@ -397,11 +428,40 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
                             }
                         });
 
+
+        showDropDownAlert();
+
+
+    }
+
+    private void showDropDownAlert() {
+
         mDropDownAlert = new DropDownAlert(this);
         mDropDownAlert.setText("Loading Target:");
         mDropDownAlert.setTextWeight(1);
         mDropDownAlert.show();
 
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_CAMERA: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initializeWikitudeSdk();
+                } else {
+                    new AlertDialog.Builder(this)
+                            .setMessage("This App won't work without camera permission. Closing BlitzzArDemo..")
+                            .setCancelable(false)
+                            .setPositiveButton("OK", (dialog, which) -> finish())
+                            .create().show();
+
+
+                }
+
+            }
+        }
     }
 }
