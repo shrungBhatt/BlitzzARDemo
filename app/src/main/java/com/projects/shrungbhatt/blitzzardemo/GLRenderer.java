@@ -13,7 +13,14 @@ import java.util.TreeMap;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-
+import static android.opengl.GLES20.glBlendFunc;
+import static android.opengl.GLES20.glClearDepthf;
+import static android.opengl.GLES20.glCullFace;
+import static android.opengl.GLES20.glDepthFunc;
+import static android.opengl.GLES20.glDepthMask;
+import static android.opengl.GLES20.glDepthRangef;
+import static android.opengl.GLES20.glEnable;
+import static android.opengl.GLES20.glFrontFace;
 
 
 public class GLRenderer implements GLSurfaceView.Renderer {
@@ -24,6 +31,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     private TreeMap<String, Renderable> mEngines = new TreeMap<>();
     private TreeMap<String, Renderable> mSprites = new TreeMap<>();
     private TreeMap<String, Renderable> mDiscBrake = new TreeMap<>();
+    private TreeMap<String, Renderable> mCubes = new TreeMap<>();
 
     /**
      * This are the params for the displaying the object
@@ -88,10 +96,20 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             }
         }
 
+        for(TreeMap.Entry<String,Renderable> cubes : mCubes.entrySet()){
+            Renderable renderable = cubes.getValue();
+            if(renderable != null) {
+                renderable.onDrawFrame();
+            }
+        }
+
     }
 
     @Override
     public void onSurfaceCreated(final GL10 unused, final EGLConfig config) {
+
+        reset();
+
         if (mWikitudeRenderExtension != null) {
             mWikitudeRenderExtension.onSurfaceCreated(unused, config);
         }
@@ -121,6 +139,13 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             renderable.onSurfaceCreated();
         }
 
+        for(TreeMap.Entry<String,Renderable> cubes : mCubes.entrySet()){
+            Renderable renderable = cubes.getValue();
+            if(renderable != null) {
+                renderable.onSurfaceCreated();
+            }
+        }
+
 
 
 
@@ -147,7 +172,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
     public synchronized void setRenderablesForKey(final String key, final Renderable renderbale,
                                                   final Renderable occluder, final Engine engine,
-                                                  final Sprite sprite,final DiscBrake discBrake) {
+                                                  final Sprite sprite,final DiscBrake discBrake,
+                                                  final Cube cube) {
         if (occluder != null) {
             mOccluders.put(key, occluder);
         }
@@ -164,6 +190,10 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             mDiscBrake.put(key,discBrake);
         }
 
+        if(cube != null){
+            mCubes.put(key,cube);
+        }
+
         mRenderables.put(key, renderbale);
     }
 
@@ -173,6 +203,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         mEngines.remove(key);
         mSprites.remove(key);
         mDiscBrake.remove(key);
+        mCubes.remove(key);
     }
 
     public synchronized void removeAllRenderables() {
@@ -181,6 +212,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         mEngines.clear();
         mSprites.clear();
         mDiscBrake.clear();
+        mCubes.clear();
     }
 
     public synchronized Renderable getRenderableForKey(final String key) {
@@ -201,6 +233,28 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
     public synchronized Renderable getDiscBrakes(final String key){
         return mDiscBrake.get(key);
+    }
+
+    public synchronized Renderable getCubes(final String key){
+        return mCubes.get(key);
+    }
+
+    //These is to give initial settings to opengl.
+    private void reset(){
+
+        glEnable(GL10.GL_DEPTH_TEST);
+        glClearDepthf(1.0f);
+        glDepthFunc(GL10.GL_LESS);
+        glDepthRangef(0, 1f);
+        glDepthMask(true);
+
+//        glEnable(GLES20.GL_BLEND);
+//        glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+
+        glFrontFace(GLES20.GL_CCW);
+        glCullFace(GLES20.GL_BACK);
+        glEnable(GLES20.GL_CULL_FACE);
+
     }
 
 }

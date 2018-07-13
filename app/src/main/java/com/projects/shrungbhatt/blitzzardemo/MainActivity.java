@@ -167,15 +167,31 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         Engine engine = new Engine(this);
         Sprite sprite = new Sprite(this);
         DiscBrake discBrake = new DiscBrake(this);
+        Cube cube = new Cube(this);
 
         mGLRenderer.setRenderablesForKey(target.getName(), strokedCube, occluderCube, engine,
-                sprite, discBrake);
+                sprite, discBrake,cube);
     }
 
     @Override
     public void onObjectTracked(ObjectTracker tracker, final ObjectTarget target) {
 
-        switch (mSelectedAugmentation) {
+        Cube cube = (Cube)mGLRenderer.getCubes(target.getName());
+
+        if(cube != null){
+            cube.projectionMatrix = target.getProjectionMatrix();
+            cube.viewMatrix = target.getViewMatrix();
+            cube.setYTranslate(0.4f);
+
+            cube.setXTranslate(0.1f);
+
+            cube.setXScale(0.1f);
+            cube.setYScale(0.1f);
+            cube.setZScale(0.1f);
+        }
+
+
+       /* switch (mSelectedAugmentation) {
 
             case Const.DETECT_ENGINE:
                 Sprite engine = (Sprite) mGLRenderer.getSpriteForKey(target.getName());
@@ -269,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
                 }
                 break;
-        }
+        }*/
 
 
     }
