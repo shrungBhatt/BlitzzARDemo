@@ -67,7 +67,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             mWikitudeRenderExtension.onDrawFrame(unused);
         }
 
-        for (TreeMap.Entry<String, Renderable> pairOccluder : mOccluders.entrySet()) {
+/*        for (TreeMap.Entry<String, Renderable> pairOccluder : mOccluders.entrySet()) {
             Renderable renderable = pairOccluder.getValue();
             renderable.onDrawFrame();
         }
@@ -94,7 +94,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             if(renderable != null) {
                 renderable.onDrawFrame();
             }
-        }
+        }*/
 
         for(TreeMap.Entry<String,Renderable> cubes : mCubes.entrySet()){
             Renderable renderable = cubes.getValue();
@@ -114,7 +114,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             mWikitudeRenderExtension.onSurfaceCreated(unused, config);
         }
 
-        for (TreeMap.Entry<String, Renderable> pairOccluder : mOccluders.entrySet()) {
+        /*for (TreeMap.Entry<String, Renderable> pairOccluder : mOccluders.entrySet()) {
             Renderable renderable = pairOccluder.getValue();
             renderable.onSurfaceCreated();
         }
@@ -137,7 +137,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         for(TreeMap.Entry<String,Renderable> discBrake : mDiscBrake.entrySet()){
             Renderable renderable = discBrake.getValue();
             renderable.onSurfaceCreated();
-        }
+        }*/
 
         for(TreeMap.Entry<String,Renderable> cubes : mCubes.entrySet()){
             Renderable renderable = cubes.getValue();

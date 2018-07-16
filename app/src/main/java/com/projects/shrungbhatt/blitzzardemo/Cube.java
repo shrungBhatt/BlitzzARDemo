@@ -6,11 +6,10 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+import min3d.Shared;
 import min3d.core.FacesBufferedList;
 import min3d.core.Object3d;
 
@@ -82,11 +81,10 @@ public class Cube extends Renderable {
 
         mContext = context;
 
+        Shared.context(mContext);
 
-        mTextureHandle = loadTexture(mContext, R.drawable.cube);
 
-
-        Object3d object3d = Util.getObeject3d(context,"cube3_obj");
+        Object3d object3d = Util.getObject3d(context,"brakes_obj");
 
         mEngineTextureCoordinates = object3d.vertices().uvs().buffer();
         mEngineTextureCoordinates.position(0);
@@ -109,6 +107,10 @@ public class Cube extends Renderable {
         mEngineIndiceBuffer.position(pos);
     }
 
+
+    public void loadTexture(){
+        mTextureHandle = loadTexture(mContext, R.drawable.merge_from_ofoct);
+    }
 
 
     @Override
@@ -180,8 +182,7 @@ public class Cube extends Renderable {
         glUniformMatrix4fv(mScaleMatrixUniform, 1, false, scaleMatrix, 0);
         glUniformMatrix4fv(mTranslateMatrixUniform, 1, false, translateMatrix, 0);
 
-//        glEnable(GL_BLEND);
-//        glBlendFunc(GL_SRC_COLOR, GL_DST_ALPHA);
+
         glDrawElements(GL_TRIANGLES, len * FacesBufferedList.PROPERTIES_PER_ELEMENT,
                 GL_UNSIGNED_SHORT, mEngineIndiceBuffer);
 
@@ -247,8 +248,6 @@ public class Cube extends Renderable {
         mTranslateMatrixUniform = glGetUniformLocation(mAugmentationProgram, "u_translation");
 
         mColorHandle = glGetUniformLocation(mAugmentationProgram,"v_color");
-
-        mTextureHandle = loadTexture(mContext, R.drawable.cube);
 
 
     }

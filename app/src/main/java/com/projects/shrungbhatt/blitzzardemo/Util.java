@@ -9,7 +9,7 @@ import min3d.parser.Parser;
 
 public class Util {
 
-    public static Object3d getObeject3d(Context context, String resourceName){
+    public static Object3d getObject3d(Context context, String resourceName){
         IParser myParser = Parser.createParser(Parser.Type.OBJ, context.getResources(),
                 "com.projects.shrungbhatt.blitzzardemo:raw/" + resourceName, false);
         myParser.parse();

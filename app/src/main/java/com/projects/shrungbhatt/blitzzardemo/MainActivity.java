@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
     private ConstraintLayout mParentConstraintLayout;
     private final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
+    private Cube mCube;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
         }
 
-//        createTargetResource(Const.DETECT_ENGINE);
     }
 
     private void initializeWikitudeSdk() {
@@ -127,9 +128,6 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
     public void onRenderExtensionCreated(final RenderExtension renderExtension) {
         mGLRenderer = new GLRenderer(renderExtension);
         createGlSurfaceView(getApplicationContext(), mGLRenderer);
-//        mView = new CustomSurfaceView(getApplicationContext(), mGLRenderer);
-//        mDriver = new Driver(mView, 30);
-//        setContentView(mView);
     }
 
     @Override
@@ -167,10 +165,10 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         Engine engine = new Engine(this);
         Sprite sprite = new Sprite(this);
         DiscBrake discBrake = new DiscBrake(this);
-        Cube cube = new Cube(this);
+        mCube.loadTexture();
 
         mGLRenderer.setRenderablesForKey(target.getName(), strokedCube, occluderCube, engine,
-                sprite, discBrake,cube);
+                sprite, discBrake,mCube);
     }
 
     @Override
@@ -182,8 +180,6 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
             cube.projectionMatrix = target.getProjectionMatrix();
             cube.viewMatrix = target.getViewMatrix();
             cube.setYTranslate(0.4f);
-
-            cube.setXTranslate(0.1f);
 
             cube.setXScale(0.1f);
             cube.setYScale(0.1f);
@@ -317,6 +313,9 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         mParentConstraintLayout.addView(mView, 0);
 
         generateFilterSpinner();
+
+        mCube = new Cube(this);
+
 
     }
 
