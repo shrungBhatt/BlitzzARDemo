@@ -17,6 +17,7 @@ import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,13 +31,18 @@ public class CustomSurfaceView extends GLSurfaceView {
 
     public static final String TAG = "WTGLSurfaceView";
     private GLRenderer mRenderer;
+    private float mDisplayMetricsDensity;
+    private float mPreviousX;
+    private float mPreviousY;
 
     public enum TargetRenderingAPI{
         OPENGL_ES_2, OPENGL_ES_3
     }
 
-    public CustomSurfaceView(final Context context, final GLRenderer renderer, final TargetRenderingAPI... targetRenderingAPIs) {
+    public CustomSurfaceView(final Context context, final GLRenderer renderer,final float displayMetricsDensity, final TargetRenderingAPI... targetRenderingAPIs) {
         this(context, renderer, null, targetRenderingAPIs);
+
+        mDisplayMetricsDensity  = displayMetricsDensity;
     }
 
     public CustomSurfaceView(final Context context, final GLRenderer renderer, final AttributeSet attrs, final TargetRenderingAPI... targetRenderingAPIs) {
@@ -101,6 +107,32 @@ public class CustomSurfaceView extends GLSurfaceView {
 
         getHolder().setFormat(PixelFormat.TRANSLUCENT);
 
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event != null) {
+            float x = event.getX();
+            float y = event.getY();
+
+            if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                if (mRenderer != null) {
+                    float deltaX = (x - mPreviousX) / mDisplayMetricsDensity / 2f;
+                    float deltaY = (y - mPreviousY) / mDisplayMetricsDensity / 2f;
+
+                    mRenderer.mDeltaX += deltaX;
+                    mRenderer.mDeltaY += deltaY;
+                }
+            }
+
+            mPreviousX = x;
+            mPreviousY = y;
+
+            return true;
+        } else {
+            return super.onTouchEvent(event);
+        }
     }
 
     @Override

@@ -11,6 +11,7 @@ import android.support.constraint.ConstraintSet;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -160,15 +161,10 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         mObjectTarget = target;
         mObjectTracker = tracker;
 
-        StrokedCube strokedCube = new StrokedCube();
-        OccluderCube occluderCube = new OccluderCube();
-        Engine engine = new Engine(this);
-        Sprite sprite = new Sprite(this);
-        DiscBrake discBrake = new DiscBrake(this);
+
         mCube.loadTexture();
 
-        mGLRenderer.setRenderablesForKey(target.getName(), strokedCube, occluderCube, engine,
-                sprite, discBrake,mCube);
+        mGLRenderer.setRenderablesForKey(target.getName(),mCube);
     }
 
     @Override
@@ -179,11 +175,15 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         if(cube != null){
             cube.projectionMatrix = target.getProjectionMatrix();
             cube.viewMatrix = target.getViewMatrix();
-            cube.setYTranslate(0.4f);
 
-            cube.setXScale(0.1f);
-            cube.setYScale(0.1f);
-            cube.setZScale(0.1f);
+
+            cube.setXScale(0.2f);
+            cube.setYScale(0.2f);
+            cube.setZScale(0.2f);
+
+            cube.setXTranslate(0.22f);
+            cube.setYTranslate(0.1f);
+            cube.setZTranslate(-0.1f);
         }
 
 
@@ -301,7 +301,11 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
      */
     private void createGlSurfaceView(Context context, GLRenderer glRenderer) {
 
-        mView = new CustomSurfaceView(context, glRenderer);
+
+        final DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        mView = new CustomSurfaceView(context, glRenderer, displayMetrics.density);
 
         mView.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));

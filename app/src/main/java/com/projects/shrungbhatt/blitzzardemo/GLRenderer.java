@@ -23,7 +23,7 @@ import static android.opengl.GLES20.glEnable;
 import static android.opengl.GLES20.glFrontFace;
 
 
-public class GLRenderer implements GLSurfaceView.Renderer {
+public class GLRenderer implements GLSurfaceView.Renderer,Interface_ResetAngle {
 
     private RenderExtension mWikitudeRenderExtension = null;
     private TreeMap<String, Renderable> mOccluders = new TreeMap<>();
@@ -33,6 +33,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     private TreeMap<String, Renderable> mDiscBrake = new TreeMap<>();
     private TreeMap<String, Renderable> mCubes = new TreeMap<>();
 
+
+    public volatile float mDeltaX;
+    public volatile float mDeltaY;
     /**
      * This are the params for the displaying the object
      */
@@ -67,39 +70,11 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             mWikitudeRenderExtension.onDrawFrame(unused);
         }
 
-/*        for (TreeMap.Entry<String, Renderable> pairOccluder : mOccluders.entrySet()) {
-            Renderable renderable = pairOccluder.getValue();
-            renderable.onDrawFrame();
-        }
-
-        for (TreeMap.Entry<String, Renderable> pairRenderables : mRenderables.entrySet()) {
-            Renderable renderable = pairRenderables.getValue();
-            renderable.onDrawFrame();
-        }
-
-        for(TreeMap.Entry<String,Renderable> engineRenderable : mEngines.entrySet()){
-            Renderable renderable = engineRenderable.getValue();
-            renderable.onDrawFrame();
-        }
-
-        for(TreeMap.Entry<String,Renderable> spriteRenderable : mSprites.entrySet()){
-            Renderable renderable = spriteRenderable.getValue();
-            if(renderable != null) {
-                renderable.onDrawFrame();
-            }
-        }
-
-        for(TreeMap.Entry<String,Renderable> discBrake : mDiscBrake.entrySet()){
-            Renderable renderable = discBrake.getValue();
-            if(renderable != null) {
-                renderable.onDrawFrame();
-            }
-        }*/
 
         for(TreeMap.Entry<String,Renderable> cubes : mCubes.entrySet()){
             Renderable renderable = cubes.getValue();
             if(renderable != null) {
-                renderable.onDrawFrame();
+                renderable.onDrawFrame(mDeltaX,mDeltaY,this);
             }
         }
 
@@ -114,30 +89,6 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             mWikitudeRenderExtension.onSurfaceCreated(unused, config);
         }
 
-        /*for (TreeMap.Entry<String, Renderable> pairOccluder : mOccluders.entrySet()) {
-            Renderable renderable = pairOccluder.getValue();
-            renderable.onSurfaceCreated();
-        }
-
-        for (TreeMap.Entry<String, Renderable> pairRenderables : mRenderables.entrySet()) {
-            Renderable renderable = pairRenderables.getValue();
-            renderable.onSurfaceCreated();
-        }
-
-        for(TreeMap.Entry<String,Renderable> engineRenderable : mEngines.entrySet()){
-            Renderable renderable = engineRenderable.getValue();
-            renderable.onSurfaceCreated();
-        }
-
-        for(TreeMap.Entry<String,Renderable> spriteRenderable : mSprites.entrySet()){
-            Renderable renderable = spriteRenderable.getValue();
-            renderable.onSurfaceCreated();
-        }
-
-        for(TreeMap.Entry<String,Renderable> discBrake : mDiscBrake.entrySet()){
-            Renderable renderable = discBrake.getValue();
-            renderable.onSurfaceCreated();
-        }*/
 
         for(TreeMap.Entry<String,Renderable> cubes : mCubes.entrySet()){
             Renderable renderable = cubes.getValue();
@@ -170,31 +121,13 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         }
     }
 
-    public synchronized void setRenderablesForKey(final String key, final Renderable renderbale,
-                                                  final Renderable occluder, final Engine engine,
-                                                  final Sprite sprite,final DiscBrake discBrake,
-                                                  final Cube cube) {
-        if (occluder != null) {
-            mOccluders.put(key, occluder);
-        }
+    public synchronized void setRenderablesForKey(final String key, final Cube cube) {
 
-        if(engine != null){
-            mEngines.put(key,engine);
-        }
-
-        if(sprite != null){
-            mSprites.put(key,sprite);
-        }
-
-        if(discBrake != null){
-            mDiscBrake.put(key,discBrake);
-        }
 
         if(cube != null){
             mCubes.put(key,cube);
         }
 
-        mRenderables.put(key, renderbale);
     }
 
     public synchronized void removeRenderablesForKey(final String key) {
@@ -257,4 +190,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
     }
 
+    @Override
+    public void resetAngle() {
+        mDeltaX = 0.0f;
+        mDeltaY = 0.0f;
+    }
 }

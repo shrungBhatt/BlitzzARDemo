@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.opengl.Matrix;
 
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
@@ -36,10 +37,11 @@ public class Cube extends Renderable {
             "uniform mat4 u_projection;" +
             "uniform mat4 u_modelView;" +
             "uniform mat4 u_scale;" +
+            "uniform mat4 u_rotation;" +
             "uniform mat4 u_translation;" +
             "void main()" +
             "{" +
-            "  gl_Position = u_projection * u_modelView * u_translation * u_scale * v_position;" +
+            "  gl_Position = u_projection * u_modelView * u_translation * u_rotation * u_scale * v_position;" +
             "v_texCoordinate = a_texCoordinate;" +
             "}";
 
@@ -49,6 +51,7 @@ public class Cube extends Renderable {
     private int mProjectionUniform = -1;
     private int mModelViewUniform = -1;
     private int mScaleMatrixUniform = -1;
+    private int mRotationMatrixUniform = -1;
     private int mTranslateMatrixUniform = -1;
     private int mTextureHandle = -1;
     private int mTextureCoordinate = -1;
@@ -69,12 +72,20 @@ public class Cube extends Renderable {
     private float mYTranslate = 0.0f;
     private float mZTranslate = 0.0f;
 
+    private final float[] mRotationMatrix = new float[16];
+    private final float[] mAccumulatedRotation = {
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+    };
+    private final float[] mCurrentRotation = new float[16];
+    private float[] mTemporaryMatrix = new float[16];
 
     static final int COORDS_PER_VERTEX = 3;
 
     float mColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-
-
+    private double mAngle;
 
 
     public Cube(Context context) {
@@ -84,7 +95,7 @@ public class Cube extends Renderable {
         Shared.context(mContext);
 
 
-        Object3d object3d = Util.getObject3d(context,"brakes_obj");
+        Object3d object3d = Util.getObject3d(context, "brakes_obj");
 
         mEngineTextureCoordinates = object3d.vertices().uvs().buffer();
         mEngineTextureCoordinates.position(0);
@@ -108,7 +119,7 @@ public class Cube extends Renderable {
     }
 
 
-    public void loadTexture(){
+    public void loadTexture() {
         mTextureHandle = loadTexture(mContext, R.drawable.merge_from_ofoct);
     }
 
@@ -116,10 +127,11 @@ public class Cube extends Renderable {
     @Override
     public void onSurfaceCreated() {
         compileShaders();
+
     }
 
     @Override
-    public void onDrawFrame() {
+    public void onDrawFrame(float deltaX, float deltaY, Interface_ResetAngle interfaceResetAngle) {
 
         if (mAugmentationProgram == -1) {
             compileShaders();
@@ -129,7 +141,6 @@ public class Cube extends Renderable {
         if (this.projectionMatrix == null || this.viewMatrix == null) {
             return;
         }
-
 
 
         glUseProgram(mAugmentationProgram);
@@ -145,8 +156,8 @@ public class Cube extends Renderable {
         //Set the color handle
         GLES20.glUniform4fv(mColorHandle, 1, mColor, 0);
 
-        mTextureCoordinate = glGetAttribLocation(mAugmentationProgram,"a_texCoordinate");
-        mTextureUniformHandle = glGetUniformLocation(mAugmentationProgram,"u_texture");
+        mTextureCoordinate = glGetAttribLocation(mAugmentationProgram, "a_texCoordinate");
+        mTextureUniformHandle = glGetUniformLocation(mAugmentationProgram, "u_texture");
 
         //Set the active texture unit to texture unit 0.
         glActiveTexture(GL_TEXTURE0);
@@ -166,22 +177,41 @@ public class Cube extends Renderable {
         glUniformMatrix4fv(mModelViewUniform, 1, false, this.viewMatrix, 0);
 
         float[] scaleMatrix = {
-                mXScale,    0.0f,       0.0f,       0.0f,
-                0.0f,       mYScale,    0.0f,       0.0f,
-                0.0f,       0.0f,       mZScale,    0.0f,
-                0.0f,       0.0f,       0.0f,       1.0f
+                mXScale, 0.0f, 0.0f, 0.0f,
+                0.0f, mYScale, 0.0f, 0.0f,
+                0.0f, 0.0f, mZScale, 0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f
         };
 
         float[] translateMatrix = {
-                1.0f,               0.0f,               0.0f,               0.0f,
-                0.0f,               1.0f,               0.0f,               0.0f,
-                0.0f,               0.0f,               1.0f,               0.0f,
-                mXTranslate,        mYTranslate,        mZTranslate,        1.0f
+                1.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, 1.0f, 0.0f, 0.0f,
+                0.0f, 0.0f, 1.0f, 0.0f,
+                mXTranslate, mYTranslate, mZTranslate, 1.0f
         };
+
 
         glUniformMatrix4fv(mScaleMatrixUniform, 1, false, scaleMatrix, 0);
         glUniformMatrix4fv(mTranslateMatrixUniform, 1, false, translateMatrix, 0);
 
+        Matrix.setIdentityM(mRotationMatrix, 0);
+        Matrix.rotateM(mRotationMatrix, 0, 90, 0.0f, 1.0f, 0.0f);
+
+        // Set a matrix that contains the current rotation.
+        Matrix.setIdentityM(mCurrentRotation, 0);
+        Matrix.rotateM(mCurrentRotation, 0, deltaX, 0.0f, 1.0f, 0.0f);
+        Matrix.rotateM(mCurrentRotation, 0, deltaY, 1.0f, 0.0f, 0.0f);
+        interfaceResetAngle.resetAngle();
+
+        // Multiply the current rotation by the accumulated rotation, and then set the accumulated rotation to the result.
+        Matrix.multiplyMM(mTemporaryMatrix, 0, mCurrentRotation, 0, mAccumulatedRotation, 0);
+        System.arraycopy(mTemporaryMatrix, 0, mAccumulatedRotation, 0, 16);
+
+        // Rotate the cube taking the overall rotation into account.
+        Matrix.multiplyMM(mTemporaryMatrix, 0, mRotationMatrix, 0, mAccumulatedRotation, 0);
+        System.arraycopy(mTemporaryMatrix, 0, mRotationMatrix, 0, 16);
+
+        glUniformMatrix4fv(mRotationMatrixUniform, 1, false, mRotationMatrix, 0);
 
         glDrawElements(GL_TRIANGLES, len * FacesBufferedList.PROPERTIES_PER_ELEMENT,
                 GL_UNSIGNED_SHORT, mEngineIndiceBuffer);
@@ -218,19 +248,25 @@ public class Cube extends Renderable {
         return mXTranslate;
     }
 
-    public void setXTranslate(float xTranslate) { this.mXTranslate = xTranslate; }
+    public void setXTranslate(float xTranslate) {
+        this.mXTranslate = xTranslate;
+    }
 
     public float getYTranslate() {
         return mYTranslate;
     }
 
-    public void setYTranslate(float yTranslate) { this.mYTranslate = yTranslate; }
+    public void setYTranslate(float yTranslate) {
+        this.mYTranslate = yTranslate;
+    }
 
     public float getZTranslate() {
         return mZTranslate;
     }
 
-    public void setZTranslate(float zTranslate) { this.mZTranslate = zTranslate; }
+    public void setZTranslate(float zTranslate) {
+        this.mZTranslate = zTranslate;
+    }
 
     private void compileShaders() {
         int vertexShader = loadShader(GL_VERTEX_SHADER, mVertexShaderCode);
@@ -246,8 +282,9 @@ public class Cube extends Renderable {
         mProjectionUniform = glGetUniformLocation(mAugmentationProgram, "u_projection");
         mScaleMatrixUniform = glGetUniformLocation(mAugmentationProgram, "u_scale");
         mTranslateMatrixUniform = glGetUniformLocation(mAugmentationProgram, "u_translation");
+        mRotationMatrixUniform = glGetUniformLocation(mAugmentationProgram, "u_rotation");
 
-        mColorHandle = glGetUniformLocation(mAugmentationProgram,"v_color");
+        mColorHandle = glGetUniformLocation(mAugmentationProgram, "v_color");
 
 
     }
