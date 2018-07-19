@@ -58,7 +58,9 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
     private ConstraintLayout mParentConstraintLayout;
     private final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
-    private Cube mCube;
+
+    private DiscBrake mDiscBrake;
+    private Engine mEngine;
 
 
     @Override
@@ -131,168 +133,6 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         createGlSurfaceView(getApplicationContext(), mGLRenderer);
     }
 
-    @Override
-    public void onTargetsLoaded(ObjectTracker tracker) {
-        Log.v(TAG, "Object tracker loaded");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mDropDownAlert.setText("Scan Target:");
-                /*try {
-                    mDropDownAlert.addImages("firetruck_image.png");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                mDropDownAlert.setTextWeight(0.5f);*/
-            }
-        });
-    }
-
-    @Override
-    public void onErrorLoadingTargets(ObjectTracker tracker, int errorCode, final String errorMessage) {
-        Log.v(TAG, "Unable to load image tracker. Reason: " + errorMessage);
-    }
-
-    @Override
-    public void onObjectRecognized(ObjectTracker tracker, final ObjectTarget target) {
-        Log.v(TAG, "Recognized target " + target.getName());
-        mDropDownAlert.dismiss();
-
-        mObjectTarget = target;
-        mObjectTracker = tracker;
-
-
-        mCube.loadTexture();
-
-        mGLRenderer.setRenderablesForKey(target.getName(),mCube);
-    }
-
-    @Override
-    public void onObjectTracked(ObjectTracker tracker, final ObjectTarget target) {
-
-        Cube cube = (Cube)mGLRenderer.getCubes(target.getName());
-
-        if(cube != null){
-            cube.projectionMatrix = target.getProjectionMatrix();
-            cube.viewMatrix = target.getViewMatrix();
-
-
-            cube.setXScale(0.2f);
-            cube.setYScale(0.2f);
-            cube.setZScale(0.2f);
-
-            cube.setXTranslate(0.22f);
-            cube.setYTranslate(0.1f);
-            cube.setZTranslate(-0.1f);
-        }
-
-
-       /* switch (mSelectedAugmentation) {
-
-            case Const.DETECT_ENGINE:
-                Sprite engine = (Sprite) mGLRenderer.getSpriteForKey(target.getName());
-
-                if (engine != null) {
-                    engine.projectionMatrix = target.getProjectionMatrix();
-                    engine.viewMatrix = target.getViewMatrix();
-
-
-                    engine.setYTranslate(0.4f);
-
-                    engine.setXTranslate(0.1f);
-
-                    engine.setXScale(target.getTargetScale().x);
-                    engine.setYScale(target.getTargetScale().y);
-                    engine.setZScale(target.getTargetScale().z);
-
-                }
-                if (mCount == 0) {
-                    AudioUtils.getInstance(this, R.raw.splash_sound).playSound();
-                    mCount--;
-                }
-                break;
-            case Const.DETECT_BRAKES:
-                DiscBrake discBrake = (DiscBrake) mGLRenderer.getDiscBrakes(target.getName());
-
-                if (discBrake != null) {
-                    discBrake.projectionMatrix = target.getProjectionMatrix();
-                    discBrake.viewMatrix = target.getViewMatrix();
-
-                    discBrake.setYTranslate(-0.4f);
-
-                    discBrake.setXTranslate(-0.1f);
-
-                    discBrake.setXScale(1.5f);
-                    discBrake.setYScale(1.5f);
-                    discBrake.setZScale(1.5f);
-
-                }
-                break;
-
-            case Const.DETECT_ALL:
-                Sprite engineForAllView = (Sprite) mGLRenderer.getSpriteForKey(target.getName());
-
-                if (engineForAllView != null) {
-                    engineForAllView.projectionMatrix = target.getProjectionMatrix();
-                    engineForAllView.viewMatrix = target.getViewMatrix();
-
-
-                    engineForAllView.setYTranslate(0.45f);
-
-                    engineForAllView.setXTranslate(-0.32f);
-
-                    engineForAllView.setXScale(target.getTargetScale().x);
-                    engineForAllView.setYScale(target.getTargetScale().y);
-                    engineForAllView.setZScale(target.getTargetScale().z);
-
-                }
-
-                DiscBrake discBrakeForAllView = (DiscBrake) mGLRenderer.getDiscBrakes(target.getName());
-
-                if (discBrakeForAllView != null) {
-                    discBrakeForAllView.projectionMatrix = target.getProjectionMatrix();
-                    discBrakeForAllView.viewMatrix = target.getViewMatrix();
-
-                    discBrakeForAllView.setYTranslate(0.1f);
-
-                    discBrakeForAllView.setXTranslate(0.28f);
-
-                    discBrakeForAllView.setXScale(0.7f);
-                    discBrakeForAllView.setYScale(0.7f);
-                    discBrakeForAllView.setZScale(0.7f);
-                }
-                break;
-
-            case Const.DETECT_DASHBOARD:
-                Sprite dashboard = (Sprite) mGLRenderer.getSpriteForKey(target.getName());
-
-                if (dashboard != null) {
-                    dashboard.projectionMatrix = target.getProjectionMatrix();
-                    dashboard.viewMatrix = target.getViewMatrix();
-
-
-                    dashboard.setYTranslate(0.4f);
-
-                    dashboard.setXTranslate(0.1f);
-
-                    dashboard.setXScale(target.getTargetScale().x);
-                    dashboard.setYScale(target.getTargetScale().y);
-                    dashboard.setZScale(target.getTargetScale().z);
-
-                }
-                break;
-        }*/
-
-
-    }
-
-    @Override
-    public void onObjectLost(ObjectTracker tracker, final ObjectTarget target) {
-        Log.v(TAG, "Lost target " + target.getName());
-        mGLRenderer.removeRenderablesForKey(target.getName());
-        mCount = 0;
-    }
-
     /**
      * This method is used for adding the GLSurfaceView in the activity_main.xml dynamically.
      *
@@ -318,10 +158,99 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
         generateFilterSpinner();
 
-        mCube = new Cube(this);
+        mDiscBrake = new DiscBrake(this);
+        mEngine = new Engine(this);
 
 
     }
+
+    @Override
+    public void onTargetsLoaded(ObjectTracker tracker) {
+        Log.v(TAG, "Object tracker loaded");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mDropDownAlert.setText("Scan Target:");
+            }
+        });
+    }
+
+    @Override
+    public void onErrorLoadingTargets(ObjectTracker tracker, int errorCode, final String errorMessage) {
+        Log.v(TAG, "Unable to load image tracker. Reason: " + errorMessage);
+    }
+
+    @Override
+    public void onObjectRecognized(ObjectTracker tracker, final ObjectTarget target) {
+        Log.v(TAG, "Recognized target " + target.getName());
+        mDropDownAlert.dismiss();
+
+        mObjectTarget = target;
+        mObjectTracker = tracker;
+
+
+        mDiscBrake.loadTexture();
+        mEngine.loadTexture();
+
+
+        mGLRenderer.setRenderablesForKey(target.getName(), mDiscBrake,mEngine);
+    }
+
+    @Override
+    public void onObjectTracked(ObjectTracker tracker, final ObjectTarget target) {
+
+
+        switch (mSelectedAugmentation) {
+
+            case Const.DETECT_ENGINE:
+                Engine engine = (Engine)mGLRenderer.getEngines(target.getName());
+                engine.projectionMatrix = target.getProjectionMatrix();
+                engine.viewMatrix = target.getViewMatrix();
+
+                engine.setXScale(0.16f);
+                engine.setYScale(0.16f);
+                engine.setZScale(0.16f);
+
+                engine.setYTranslate(0.4f);
+                engine.setXTranslate(0.1f);
+                break;
+            case Const.DETECT_BRAKES:
+
+                break;
+
+            case Const.DETECT_ALL:
+                DiscBrake discBrake = (DiscBrake)mGLRenderer.getCubes(target.getName());
+
+                if(discBrake != null){
+                    discBrake.projectionMatrix = target.getProjectionMatrix();
+                    discBrake.viewMatrix = target.getViewMatrix();
+
+                    discBrake.setXScale(0.2f);
+                    discBrake.setYScale(0.2f);
+                    discBrake.setZScale(0.2f);
+
+                    discBrake.setXTranslate(0.22f);
+                    discBrake.setYTranslate(0.1f);
+                    discBrake.setZTranslate(-0.1f);
+                }
+                break;
+
+            case Const.DETECT_DASHBOARD:
+
+                break;
+        }
+
+
+    }
+
+    @Override
+    public void onObjectLost(ObjectTracker tracker, final ObjectTarget target) {
+        Log.v(TAG, "Lost target " + target.getName());
+        mGLRenderer.removeRenderablesForKey(target.getName());
+        mCount = 0;
+    }
+
+
 
     private void generateFilterSpinner() {
 
@@ -329,8 +258,8 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
 
         spinner.setId(CHILD_FILTER_SPINNER);
 
-        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(
-                dpToPx(40), dpToPx(40));
+        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(dpToPx(40),
+                dpToPx(40));
 
 
         spinner.setLayoutParams(layoutParams);

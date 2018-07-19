@@ -16,7 +16,7 @@ import min3d.core.Object3d;
 
 import static android.opengl.GLES20.*;
 
-public class Cube extends Renderable {
+public class DiscBrake extends Renderable {
 
     private static final String TAG = "Engine";
     private Context mContext;
@@ -60,9 +60,9 @@ public class Cube extends Renderable {
     private int mTextureCoordinateDataSize = 2;
 
 
-    private FloatBuffer mEngineTextureCoordinates;
-    private FloatBuffer mEngineVertexBuffer;
-    private ShortBuffer mEngineIndiceBuffer;
+    private FloatBuffer mTextureCoordinates;
+    private FloatBuffer mVertexBuffer;
+    private ShortBuffer mIndicesBuffer;
 
     private float mXScale = 1.0f;
     private float mYScale = 1.0f;
@@ -73,12 +73,14 @@ public class Cube extends Renderable {
     private float mZTranslate = 0.0f;
 
     private final float[] mRotationMatrix = new float[16];
+
     private final float[] mAccumulatedRotation = {
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
             0, 0, 0, 1
     };
+
     private final float[] mCurrentRotation = new float[16];
     private float[] mTemporaryMatrix = new float[16];
 
@@ -88,21 +90,21 @@ public class Cube extends Renderable {
     private double mAngle;
 
 
-    public Cube(Context context) {
+    public DiscBrake(Context context) {
 
         mContext = context;
 
         Shared.context(mContext);
 
 
-        Object3d object3d = Util.getObject3d(context, "brakes_obj");
+        Object3d object3d = Util.getObject3d(context, Const.OBJECT_BRAKE);
 
-        mEngineTextureCoordinates = object3d.vertices().uvs().buffer();
-        mEngineTextureCoordinates.position(0);
+        mTextureCoordinates = object3d.vertices().uvs().buffer();
+        mTextureCoordinates.position(0);
 
 
-        mEngineVertexBuffer = object3d.vertices().points().buffer();
-        mEngineVertexBuffer.position(0);
+        mVertexBuffer = object3d.vertices().points().buffer();
+        mVertexBuffer.position(0);
 
         // initialize byte buffer for the draw list
 
@@ -114,13 +116,13 @@ public class Cube extends Renderable {
             len = object3d.faces().renderSubsetLength();
         }
 
-        mEngineIndiceBuffer = object3d.faces().buffer();
-        mEngineIndiceBuffer.position(pos);
+        mIndicesBuffer = object3d.faces().buffer();
+        mIndicesBuffer.position(pos);
     }
 
 
     public void loadTexture() {
-        mTextureHandle = loadTexture(mContext, R.drawable.merge_from_ofoct);
+        mTextureHandle = loadTexture(mContext, R.drawable.disc_brake_texture);
     }
 
 
@@ -144,13 +146,11 @@ public class Cube extends Renderable {
 
 
         glUseProgram(mAugmentationProgram);
-//
-//        glBindBuffer(GL_ARRAY_BUFFER, 0);
-//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 
 
         glVertexAttribPointer(mPositionSlot, COORDS_PER_VERTEX, GL_FLOAT,
-                false, 0, mEngineVertexBuffer);
+                false, 0, mVertexBuffer);
         glEnableVertexAttribArray(mPositionSlot);
 
         //Set the color handle
@@ -170,7 +170,7 @@ public class Cube extends Renderable {
 
         //Pass in the texture coordinate information
         glVertexAttribPointer(mTextureCoordinate, mTextureCoordinateDataSize, GL_FLOAT,
-                false, 0, mEngineTextureCoordinates);
+                false, 0, mTextureCoordinates);
         glEnableVertexAttribArray(mTextureCoordinate);
 
         glUniformMatrix4fv(mProjectionUniform, 1, false, this.projectionMatrix, 0);
@@ -214,7 +214,7 @@ public class Cube extends Renderable {
         glUniformMatrix4fv(mRotationMatrixUniform, 1, false, mRotationMatrix, 0);
 
         glDrawElements(GL_TRIANGLES, len * FacesBufferedList.PROPERTIES_PER_ELEMENT,
-                GL_UNSIGNED_SHORT, mEngineIndiceBuffer);
+                GL_UNSIGNED_SHORT, mIndicesBuffer);
 
         glDisableVertexAttribArray(mPositionSlot);
 

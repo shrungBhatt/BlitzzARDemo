@@ -13,7 +13,6 @@ import java.util.TreeMap;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import static android.opengl.GLES20.glBlendFunc;
 import static android.opengl.GLES20.glClearDepthf;
 import static android.opengl.GLES20.glCullFace;
 import static android.opengl.GLES20.glDepthFunc;
@@ -26,12 +25,8 @@ import static android.opengl.GLES20.glFrontFace;
 public class GLRenderer implements GLSurfaceView.Renderer,Interface_ResetAngle {
 
     private RenderExtension mWikitudeRenderExtension = null;
-    private TreeMap<String, Renderable> mOccluders = new TreeMap<>();
-    private TreeMap<String, Renderable> mRenderables = new TreeMap<>();
-    private TreeMap<String, Renderable> mEngines = new TreeMap<>();
-    private TreeMap<String, Renderable> mSprites = new TreeMap<>();
-    private TreeMap<String, Renderable> mDiscBrake = new TreeMap<>();
     private TreeMap<String, Renderable> mCubes = new TreeMap<>();
+    private TreeMap<String, Renderable> mEngines = new TreeMap<>();
 
 
     public volatile float mDeltaX;
@@ -78,6 +73,13 @@ public class GLRenderer implements GLSurfaceView.Renderer,Interface_ResetAngle {
             }
         }
 
+        for(TreeMap.Entry<String,Renderable> engines : mEngines.entrySet()){
+            Renderable renderable = engines.getValue();
+            if(renderable != null) {
+                renderable.onDrawFrame(mDeltaX,mDeltaY,this);
+            }
+        }
+
     }
 
     @Override
@@ -92,6 +94,13 @@ public class GLRenderer implements GLSurfaceView.Renderer,Interface_ResetAngle {
 
         for(TreeMap.Entry<String,Renderable> cubes : mCubes.entrySet()){
             Renderable renderable = cubes.getValue();
+            if(renderable != null) {
+                renderable.onSurfaceCreated();
+            }
+        }
+
+        for(TreeMap.Entry<String,Renderable> engines : mEngines.entrySet()){
+            Renderable renderable = engines.getValue();
             if(renderable != null) {
                 renderable.onSurfaceCreated();
             }
@@ -121,55 +130,38 @@ public class GLRenderer implements GLSurfaceView.Renderer,Interface_ResetAngle {
         }
     }
 
-    public synchronized void setRenderablesForKey(final String key, final Cube cube) {
+    public synchronized void setRenderablesForKey(final String key, final DiscBrake discBrake,
+                                                  final Engine engine) {
 
-
-        if(cube != null){
-            mCubes.put(key,cube);
+        if(discBrake != null){
+            mCubes.put(key, discBrake);
         }
+
+        if(engine != null){
+            mEngines.put(key,engine);
+        }
+
+
 
     }
 
     public synchronized void removeRenderablesForKey(final String key) {
-        mRenderables.remove(key);
-        mOccluders.remove(key);
-        mEngines.remove(key);
-        mSprites.remove(key);
-        mDiscBrake.remove(key);
         mCubes.remove(key);
+        mEngines.remove(key);
     }
 
     public synchronized void removeAllRenderables() {
-        mRenderables.clear();
-        mOccluders.clear();
         mEngines.clear();
-        mSprites.clear();
-        mDiscBrake.clear();
         mCubes.clear();
     }
 
-    public synchronized Renderable getRenderableForKey(final String key) {
-        return mRenderables.get(key);
-    }
-
-    public synchronized Renderable getOccluderForKey(final String key) {
-        return mOccluders.get(key);
-    }
-
-    public synchronized Renderable getEngineForKey(final String key){
-        return mEngines.get(key);
-    }
-
-    public synchronized Renderable getSpriteForKey(final String key){
-        return mSprites.get(key);
-    }
-
-    public synchronized Renderable getDiscBrakes(final String key){
-        return mDiscBrake.get(key);
-    }
 
     public synchronized Renderable getCubes(final String key){
         return mCubes.get(key);
+    }
+
+    public synchronized Renderable getEngines(final String key){
+        return mEngines.get(key);
     }
 
     //These is to give initial settings to opengl.

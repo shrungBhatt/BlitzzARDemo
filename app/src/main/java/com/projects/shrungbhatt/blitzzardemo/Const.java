@@ -18,4 +18,8 @@ public class Const {
     public static final int FILTER_OF_ALL = 4;
 
 
+    public static final String OBJECT_BRAKE = "brakes_obj";
+    public static final String OBJECT_ENGINE = "engine_obj";
+
+
 }
