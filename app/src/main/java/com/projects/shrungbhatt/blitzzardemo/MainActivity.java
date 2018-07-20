@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.opengl.GLES20;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -246,6 +247,8 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
     @Override
     public void onObjectLost(ObjectTracker tracker, final ObjectTarget target) {
         Log.v(TAG, "Lost target " + target.getName());
+        mEngine.resetViewAndProjectionMatrix();
+        mDiscBrake.resetViewAndProjectionMatrix();
         mGLRenderer.removeRenderablesForKey(target.getName());
         mCount = 0;
     }

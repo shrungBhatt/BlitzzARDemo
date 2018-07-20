@@ -329,5 +329,15 @@ public class DiscBrake extends Renderable {
         }
 
         return textureHandle[0];
+
+
+    }
+
+    public void resetViewAndProjectionMatrix(){
+
+        projectionMatrix = null;
+        viewMatrix = null;
+
+
     }
 }
