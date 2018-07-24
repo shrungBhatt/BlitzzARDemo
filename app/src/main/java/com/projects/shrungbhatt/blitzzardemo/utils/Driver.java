@@ -1,4 +1,6 @@
-package com.projects.shrungbhatt.blitzzardemo;
+package com.projects.shrungbhatt.blitzzardemo.utils;
+
+import com.projects.shrungbhatt.blitzzardemo.CustomSurfaceView;
 
 import java.util.Timer;
 import java.util.TimerTask;

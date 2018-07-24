@@ -1,4 +1,4 @@
-package com.projects.shrungbhatt.blitzzardemo;
+package com.projects.shrungbhatt.blitzzardemo.utils;
 
 public class Const {
 

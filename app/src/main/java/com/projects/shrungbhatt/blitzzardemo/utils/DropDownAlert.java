@@ -1,4 +1,4 @@
-package com.projects.shrungbhatt.blitzzardemo;
+package com.projects.shrungbhatt.blitzzardemo.utils;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.flexbox.FlexboxLayout;
+import com.projects.shrungbhatt.blitzzardemo.R;
 
 import java.io.IOException;
 import java.io.InputStream;

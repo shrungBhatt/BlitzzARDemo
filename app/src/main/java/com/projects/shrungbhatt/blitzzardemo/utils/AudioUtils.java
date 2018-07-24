@@ -1,4 +1,4 @@
-package com.projects.shrungbhatt.blitzzardemo;
+package com.projects.shrungbhatt.blitzzardemo.utils;
 
 import android.content.Context;
 import android.media.AudioManager;

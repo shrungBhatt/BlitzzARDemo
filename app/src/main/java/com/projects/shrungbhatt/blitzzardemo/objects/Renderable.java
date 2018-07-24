@@ -1,4 +1,6 @@
-package com.projects.shrungbhatt.blitzzardemo;
+package com.projects.shrungbhatt.blitzzardemo.objects;
+
+import com.projects.shrungbhatt.blitzzardemo.utils.Interface_ResetAngle;
 
 public abstract class Renderable {
     public float[] projectionMatrix = null;

@@ -1,4 +1,4 @@
-package com.projects.shrungbhatt.blitzzardemo;
+package com.projects.shrungbhatt.blitzzardemo.objects;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -6,6 +6,11 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+
+import com.projects.shrungbhatt.blitzzardemo.utils.Const;
+import com.projects.shrungbhatt.blitzzardemo.utils.Interface_ResetAngle;
+import com.projects.shrungbhatt.blitzzardemo.R;
+import com.projects.shrungbhatt.blitzzardemo.utils.Util;
 
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
