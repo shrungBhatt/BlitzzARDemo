@@ -15,6 +15,13 @@ buildscript {
     }
 }
 
+subprojects {
+    ext.commonCompileSdkVersion = 27
+    ext.commonMinSdkVersion = 21
+    ext.commonTargetSdkVersion = 27
+    ext.commonSupportLibVersion = "27.1.0"
+}
+
 allprojects {
     repositories {
         google()

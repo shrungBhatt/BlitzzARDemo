@@ -3,12 +3,14 @@ package com.projects.shrungbhatt.blitzzardemo;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 
 
 import com.projects.shrungbhatt.blitzzardemo.objects.DiscBrake;
 import com.projects.shrungbhatt.blitzzardemo.objects.Engine;
 import com.projects.shrungbhatt.blitzzardemo.objects.Renderable;
 import com.projects.shrungbhatt.blitzzardemo.utils.Interface_ResetAngle;
+import com.wikitude.camera.CameraManager;
 import com.wikitude.common.rendering.RenderExtension;
 
 
@@ -26,15 +28,22 @@ import static android.opengl.GLES20.glEnable;
 import static android.opengl.GLES20.glFrontFace;
 
 
-public class GLRenderer implements GLSurfaceView.Renderer,Interface_ResetAngle {
+public class GLRenderer implements GLSurfaceView.Renderer,Interface_ResetAngle,
+        CameraManager.FovChangedListener{
 
     private RenderExtension mWikitudeRenderExtension = null;
     private TreeMap<String, Renderable> mCubes = new TreeMap<>();
     private TreeMap<String, Renderable> mEngines = new TreeMap<>();
 
+    private final float[] mProjectionMatrix = new float[16];
+
+
 
     public volatile float mDeltaX;
     public volatile float mDeltaY;
+
+    public int mWidth;
+    public int mHeight;
     /**
      * This are the params for the displaying the object
      */
@@ -117,6 +126,10 @@ public class GLRenderer implements GLSurfaceView.Renderer,Interface_ResetAngle {
 
     @Override
     public void onSurfaceChanged(final GL10 unused, final int width, final int height) {
+
+        mWidth = width;
+        mHeight = height;
+
         if (mWikitudeRenderExtension != null) {
             mWikitudeRenderExtension.onSurfaceChanged(unused, width, height);
         }
@@ -138,10 +151,12 @@ public class GLRenderer implements GLSurfaceView.Renderer,Interface_ResetAngle {
                                                   final Engine engine) {
 
         if(discBrake != null){
+            discBrake.projectionMatrix = mProjectionMatrix;
             mCubes.put(key, discBrake);
         }
 
         if(engine != null){
+            engine.projectionMatrix = mProjectionMatrix;
             mEngines.put(key,engine);
         }
 
@@ -190,5 +205,14 @@ public class GLRenderer implements GLSurfaceView.Renderer,Interface_ResetAngle {
     public void resetAngle() {
         mDeltaX = 0.0f;
         mDeltaY = 0.0f;
+    }
+
+    @Override
+    public void onFovChanged(float fieldOfView) {
+        if (mWidth != 0 && mHeight != 0) {
+            Matrix.perspectiveM(mProjectionMatrix, 0, fieldOfView,
+                    (float)mWidth/(float)mHeight,
+                    0.05f, 5000f);
+        }
     }
 }

@@ -28,6 +28,7 @@ import com.projects.shrungbhatt.blitzzardemo.utils.DropDownAlert;
 import com.projects.shrungbhatt.blitzzardemo.utils.WikitudeSDKConstants;
 import com.wikitude.NativeStartupConfiguration;
 import com.wikitude.WikitudeSDK;
+import com.wikitude.common.WikitudeError;
 import com.wikitude.common.camera.CameraSettings;
 import com.wikitude.common.rendering.RenderExtension;
 import com.wikitude.rendering.ExternalRendering;
@@ -182,9 +183,11 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
     }
 
     @Override
-    public void onErrorLoadingTargets(ObjectTracker tracker, int errorCode, final String errorMessage) {
-        Log.v(TAG, "Unable to load image tracker. Reason: " + errorMessage);
+    public void onErrorLoadingTargets(ObjectTracker objectTracker, WikitudeError wikitudeError) {
+
     }
+
+
 
     @Override
     public void onObjectRecognized(ObjectTracker tracker, final ObjectTarget target) {
@@ -258,6 +261,10 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         mCount = 0;
     }
 
+    @Override
+    public void onExtendedTrackingQualityChanged(ObjectTracker objectTracker, ObjectTarget objectTarget, int i, int i1) {
+
+    }
 
 
     private void generateFilterSpinner() {
@@ -372,9 +379,9 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
                 createTargetCollectionResource("file:///android_asset/" + targetFileName,
                         new TargetCollectionResourceLoadingCallback() {
                             @Override
-                            public void onError(int errorCode, String errorMessage) {
+                            public void onError(WikitudeError wikitudeError) {
                                 Log.v(TAG, "Failed to load target collection resource. Reason: "
-                                        + errorMessage);
+                                        + wikitudeError.getMessage());
                             }
 
                             @Override

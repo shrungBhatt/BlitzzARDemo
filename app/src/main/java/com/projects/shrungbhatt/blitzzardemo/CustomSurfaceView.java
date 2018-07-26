@@ -39,6 +39,11 @@ public class CustomSurfaceView extends GLSurfaceView {
         OPENGL_ES_2, OPENGL_ES_3
     }
 
+    public CustomSurfaceView(final Context context, final GLRenderer renderer, final TargetRenderingAPI... targetRenderingAPIs) {
+        this(context, renderer, null, targetRenderingAPIs);
+
+    }
+
     public CustomSurfaceView(final Context context, final GLRenderer renderer,final float displayMetricsDensity, final TargetRenderingAPI... targetRenderingAPIs) {
         this(context, renderer, null, targetRenderingAPIs);
 

@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="/home/shrung/SculptSoft/BlitzzARDemo/plugins/src/main/shaders"/></dataSet><dataSet config="allarchs"><source path="/home/shrung/SculptSoft/BlitzzARDemo/plugins/src/allarchs/shaders"/></dataSet><dataSet config="debug"><source path="/home/shrung/SculptSoft/BlitzzARDemo/plugins/src/debug/shaders"/></dataSet><dataSet config="allarchsDebug"><source path="/home/shrung/SculptSoft/BlitzzARDemo/plugins/src/allarchsDebug/shaders"/></dataSet></merger>
