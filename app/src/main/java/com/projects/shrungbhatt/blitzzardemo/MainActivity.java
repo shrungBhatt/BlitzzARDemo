@@ -25,9 +25,11 @@ import com.projects.shrungbhatt.blitzzardemo.objects.Engine;
 import com.projects.shrungbhatt.blitzzardemo.utils.Const;
 import com.projects.shrungbhatt.blitzzardemo.utils.Driver;
 import com.projects.shrungbhatt.blitzzardemo.utils.DropDownAlert;
+import com.projects.shrungbhatt.blitzzardemo.utils.FrameInputPluginModule;
 import com.projects.shrungbhatt.blitzzardemo.utils.WikitudeSDKConstants;
 import com.wikitude.NativeStartupConfiguration;
 import com.wikitude.WikitudeSDK;
+import com.wikitude.common.ErrorCallback;
 import com.wikitude.common.WikitudeError;
 import com.wikitude.common.camera.CameraSettings;
 import com.wikitude.common.rendering.RenderExtension;
@@ -37,10 +39,15 @@ import com.wikitude.tracker.ObjectTracker;
 import com.wikitude.tracker.ObjectTrackerListener;
 import com.wikitude.tracker.TargetCollectionResource;
 import com.wikitude.tracker.TargetCollectionResourceLoadingCallback;
+import com.wikitude.tracker.TrackerManager;
 
 
 public class MainActivity extends AppCompatActivity implements ObjectTrackerListener,
         ExternalRendering, AdapterView.OnItemSelectedListener {
+
+    static {
+        System.loadLibrary("wikitudePlugins");
+    }
 
     public static final String TAG = "MainActivity";
 
@@ -51,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
     private CustomSurfaceView mView;
     private Driver mDriver;
     private GLRenderer mGLRenderer;
+    private FrameInputPluginModule mInputPluginModule;
+
 
     private TargetCollectionResource mTargetCollectionResource;
     private DropDownAlert mDropDownAlert;
@@ -98,10 +107,17 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
         mWikitudeSDK = new WikitudeSDK(this);
         NativeStartupConfiguration startupConfiguration = new NativeStartupConfiguration();
         startupConfiguration.setLicenseKey(WikitudeSDKConstants.WIKITUDE_SDK_KEY);
-        startupConfiguration.setCameraPosition(CameraSettings.CameraPosition.BACK);
-        startupConfiguration.setCameraResolution(CameraSettings.CameraResolution.AUTO);
 
         mWikitudeSDK.onCreate(getApplicationContext(), this, startupConfiguration);
+
+        initNative();
+
+        mWikitudeSDK.getPluginManager().registerNativePlugins("wikitudePlugins", "simple_input_plugin", new ErrorCallback() {
+            @Override
+            public void onError(@NonNull WikitudeError error) {
+                Log.v(TAG, "Plugin failed to load. Reason: " + error.getMessage());
+            }
+        });
 
     }
 
@@ -137,6 +153,10 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
     @Override
     public void onRenderExtensionCreated(final RenderExtension renderExtension) {
         mGLRenderer = new GLRenderer(renderExtension);
+
+        mWikitudeSDK.getCameraManager().setRenderingCorrectedFovChangedListener(mGLRenderer);
+
+
         createGlSurfaceView(getApplicationContext(), mGLRenderer);
     }
 
@@ -309,9 +329,11 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
     public void onItemSelected(AdapterView<?> adapterView, View view, int selectedPosition, long l) {
 
 
+/*
         if (mObjectTracker != null && mObjectTarget != null) {
             onObjectLost(mObjectTracker, mObjectTarget);
         }
+*/
 
         ((TextView) view).setText(null);
 
@@ -376,20 +398,10 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
     private void getTargetResourceFromAssets(final String targetFileName) {
 
         mTargetCollectionResource = mWikitudeSDK.getTrackerManager().
-                createTargetCollectionResource("file:///android_asset/" + targetFileName,
-                        new TargetCollectionResourceLoadingCallback() {
-                            @Override
-                            public void onError(WikitudeError wikitudeError) {
-                                Log.v(TAG, "Failed to load target collection resource. Reason: "
-                                        + wikitudeError.getMessage());
-                            }
+                createTargetCollectionResource("file:///android_asset/" + targetFileName);
 
-                            @Override
-                            public void onFinish() {
-                                mWikitudeSDK.getTrackerManager().createObjectTracker(mTargetCollectionResource,
-                                        MainActivity.this, null);
-                            }
-                        });
+        mWikitudeSDK.getTrackerManager().createObjectTracker(mTargetCollectionResource,
+                MainActivity.this,null);
 
 
         showDropDownAlert();
@@ -427,4 +439,43 @@ public class MainActivity extends AppCompatActivity implements ObjectTrackerList
             }
         }
     }
+
+    /**
+     * Called from c++ on initialization of the Plugin.
+     */
+    public void onInputPluginInitialized() {
+        mInputPluginModule = new FrameInputPluginModule(this, getInputModuleHandle());
+    }
+
+    /**
+     * Called from c++ onCameraReleased of the CameraFrameInputPluginModule.
+     */
+    public void onSDKCameraReleased() {
+        mInputPluginModule.start();
+    }
+
+    /**
+     * Called from c++ on pause of the Plugin.
+     */
+    public void onInputPluginPaused() {
+        mInputPluginModule.stop();
+    }
+
+    /**
+     * Called from c++ on resume of the Plugin.
+     */
+    public void onInputPluginResumed() {
+        mInputPluginModule.start();
+    }
+
+    /**
+     * Called from c++ on destroy of the Plugin.
+     */
+    public void onInputPluginDestroyed() {
+
+    }
+
+    //These are native method's, they are supposed to look red, don't delete them! They will get angry.
+    private native void initNative();
+    private native long getInputModuleHandle();
 }

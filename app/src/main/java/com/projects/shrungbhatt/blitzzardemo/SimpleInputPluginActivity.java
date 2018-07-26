@@ -70,7 +70,6 @@ public class SimpleInputPluginActivity extends Activity implements ObjectTracker
                                         null);
                             }
                         });
-//        ClassScope.getLoadedLibraries(ClassLoader.getSystemClassLoader());
 
 
         // sets this activity in the plugin

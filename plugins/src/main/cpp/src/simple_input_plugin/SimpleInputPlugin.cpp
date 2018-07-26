@@ -89,12 +89,12 @@ void SimpleInputPlugin::callInitializedJNIMethod(jmethodID methodId_) {
  * Initialize c++->java connection.
  */
 extern "C" JNIEXPORT void JNICALL
-Java_com_projects_shrungbhatt_blitzzardemo_SimpleInputPluginActivity_initNative(JNIEnv* env, jobject obj) {
+Java_com_projects_shrungbhatt_blitzzardemo_MainActivity_initNative(JNIEnv* env, jobject obj) {
     env->GetJavaVM(&pluginJavaVM);
     simpleInputPluginActivity = env->NewGlobalRef(obj);
 }
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_com_projects_shrungbhatt_blitzzardemo_SimpleInputPluginActivity_getInputModuleHandle(JNIEnv*, jobject) {
+Java_com_projects_shrungbhatt_blitzzardemo_MainActivity_getInputModuleHandle(JNIEnv*, jobject) {
     return reinterpret_cast<jlong>(SimpleInputPlugin::instance->getCameraFrameInputPluginModule());
 }
