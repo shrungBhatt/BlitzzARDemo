@@ -15,9 +15,9 @@ public final class FrameInputPluginModule implements CameraCallback {
     private static final int FRAME_WIDTH = 640;
     private static final int FRAME_HEIGHT = 480;
 
-    private final long nativeHandle;
-    private final Camera camera;
-    private final Display display;
+    private final long mNativeHandle;
+    private final Camera mCamera;
+    private final Display mDisplay;
 
     @Nullable
     private HandlerThread backgroundThread;
@@ -26,12 +26,12 @@ public final class FrameInputPluginModule implements CameraCallback {
 
 
     public FrameInputPluginModule(Context context, long nativeHandle) {
-        this.nativeHandle = nativeHandle;
+        this.mNativeHandle = nativeHandle;
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
-            camera = new BlitzzCamera2(context, this, FRAME_WIDTH, FRAME_HEIGHT);
+            mCamera = new BlitzzCamera2(context, this, FRAME_WIDTH, FRAME_HEIGHT);
         } else {
-            camera = new BlitzzCamera(this, FRAME_WIDTH, FRAME_HEIGHT);
+            mCamera = new BlitzzCamera(this, FRAME_WIDTH, FRAME_HEIGHT);
         }
 
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -39,11 +39,11 @@ public final class FrameInputPluginModule implements CameraCallback {
             throw new IllegalStateException("Unable to get the WindowManager from the given context.");
         }
 
-        display = windowManager.getDefaultDisplay();
+        mDisplay = windowManager.getDefaultDisplay();
     }
 
     public void start() {
-        camera.start();
+        mCamera.start();
         if (backgroundThread == null) {
             backgroundThread = new HandlerThread("FrameInputPluginModule");
             backgroundThread.start();
@@ -52,11 +52,11 @@ public final class FrameInputPluginModule implements CameraCallback {
 
         backgroundHandler.post(new Runnable() {
             private int lastOrientation = -1;
-            private int cameraOrientation = camera.getCameraOrientation();
+            private int cameraOrientation = mCamera.getCameraOrientation();
 
             @Override
             public void run() {
-                int rotation = display.getRotation();
+                int rotation = mDisplay.getRotation();
                 float orientation = 0;
                 if (rotation != lastOrientation) {
                     switch (rotation) {
@@ -79,7 +79,7 @@ public final class FrameInputPluginModule implements CameraCallback {
                     if (camToSurfaceAngle < 0) {
                         camToSurfaceAngle += 360;
                     }
-                    nativeCameraToSurfaceAngleChanged(nativeHandle, camToSurfaceAngle);
+                    nativeCameraToSurfaceAngleChanged(mNativeHandle, camToSurfaceAngle);
                 }
                 backgroundHandler.postDelayed(this, 50);
             }
@@ -98,7 +98,7 @@ public final class FrameInputPluginModule implements CameraCallback {
                 backgroundHandler = null;
             }
         }
-        camera.stop();
+        mCamera.stop();
     }
 
 
@@ -106,7 +106,7 @@ public final class FrameInputPluginModule implements CameraCallback {
     public void notifyNewCameraFrameYUV420888(final ByteBuffer luminanceData, final ByteBuffer chromaBlueData, final ByteBuffer chromaRedData, final int rowStrideLuminance, final int
             pixelStrideChroma, final int rowStrideChroma) {
         nativeNotifyNewCameraFrameYUV420888(
-                nativeHandle,
+                mNativeHandle,
                 luminanceData,
                 chromaBlueData,
                 chromaRedData,
@@ -118,19 +118,20 @@ public final class FrameInputPluginModule implements CameraCallback {
 
     @Override
     public void notifyNewCameraFrameNV21(final byte[] data) {
-        nativeNotifyNewCameraFrameNV21(nativeHandle, data);
+        nativeNotifyNewCameraFrameNV21(mNativeHandle, data);
     }
 
     @Override
     public void fieldOfViewChanged(final float fov) {
-        nativeFieldOfViewChanged(nativeHandle, fov);
+        nativeFieldOfViewChanged(mNativeHandle, fov);
     }
 
     @Override
     public void cameraReleased() {
-        nativeCameraReleased(nativeHandle);
+        nativeCameraReleased(mNativeHandle);
     }
 
+    //These are native method's, they are supposed to look red, don't delete them! They will get angry.
     private native void nativeNotifyNewCameraFrameYUV420888(long nativeHandle, ByteBuffer luminanceData, ByteBuffer chromaBlueData, ByteBuffer chromaRedData,int rowStrideLuminance, int pixelStrideChroma,
                                                        int rowStrideChroma);
     private native void nativeNotifyNewCameraFrameNV21(long nativeHandle, byte[] data);

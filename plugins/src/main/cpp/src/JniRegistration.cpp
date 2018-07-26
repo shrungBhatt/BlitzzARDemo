@@ -2,10 +2,6 @@
 
 #include "jniHelper.h"
 #include "Plugin.h"
-#include "FaceDetectionPluginConnector.h"
-#include "FaceDetectionPlugin.h"
-#include "BarcodePlugin.h"
-#include "YUVFrameInputPlugin.h"
 #include "SimpleInputPlugin.h"
 
 
@@ -20,15 +16,8 @@ extern "C" JNIEXPORT jlongArray JNICALL Java_com_wikitude_common_plugins_interna
     jlong cPluginsArray[numberOfPlugins];
     
     JavaStringResource pluginName(env, jPluginName);
-    
-    if (pluginName.str == "face_detection") {
-        FaceDetectionPluginConnector* connector = new FaceDetectionPluginConnector();
-        cPluginsArray[0] = (jlong) new FaceDetectionPlugin(640, 480, connector);
-    } else if (pluginName.str == "barcode") {
-        cPluginsArray[0] = (jlong) new BarcodePlugin(640, 480);
-    } else if ( pluginName.str == "customcamera" ) {
-        cPluginsArray[0] = (jlong) new YUVFrameInputPlugin();
-    } else if ( pluginName.str == "simple_input_plugin" ) {
+
+    if ( pluginName.str == "simple_input_plugin" ) {
         cPluginsArray[0] = (jlong) new SimpleInputPlugin();
     }
     
