@@ -20,9 +20,9 @@ public final class FrameInputPluginModule implements CameraCallback {
     private final Display mDisplay;
 
     @Nullable
-    private HandlerThread backgroundThread;
+    private HandlerThread mBackgroundThread;
     @Nullable
-    private Handler backgroundHandler;
+    private Handler mBackgroundHandler;
 
 
     public FrameInputPluginModule(Context context, long nativeHandle) {
@@ -44,13 +44,13 @@ public final class FrameInputPluginModule implements CameraCallback {
 
     public void start() {
         mCamera.start();
-        if (backgroundThread == null) {
-            backgroundThread = new HandlerThread("FrameInputPluginModule");
-            backgroundThread.start();
-            backgroundHandler =  new Handler(backgroundThread.getLooper());
+        if (mBackgroundThread == null) {
+            mBackgroundThread = new HandlerThread("FrameInputPluginModule");
+            mBackgroundThread.start();
+            mBackgroundHandler =  new Handler(mBackgroundThread.getLooper());
         }
 
-        backgroundHandler.post(new Runnable() {
+        mBackgroundHandler.post(new Runnable() {
             private int lastOrientation = -1;
             private int cameraOrientation = mCamera.getCameraOrientation();
 
@@ -81,21 +81,21 @@ public final class FrameInputPluginModule implements CameraCallback {
                     }
                     nativeCameraToSurfaceAngleChanged(mNativeHandle, camToSurfaceAngle);
                 }
-                backgroundHandler.postDelayed(this, 50);
+                mBackgroundHandler.postDelayed(this, 50);
             }
         });
     }
 
     public void stop() {
-        if (backgroundThread != null) {
-            backgroundThread.quitSafely();
+        if (mBackgroundThread != null) {
+            mBackgroundThread.quitSafely();
             try {
-                backgroundThread.join();
+                mBackgroundThread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                backgroundThread = null;
-                backgroundHandler = null;
+                mBackgroundThread = null;
+                mBackgroundHandler = null;
             }
         }
         mCamera.stop();
